@@ -1,0 +1,36 @@
+[versions]
+## SDK Versions
+androidTargetSdk = "34"
+androidMinSdk = "26"
+javaSdk = "17"
+
+## Plugins
+vGradle = { strictly = "8.2.2" }
+
+## Kotlin
+vKotlin = { strictly = "1.9.22" }
+vKotlinSerialization = { strictly = "1.6.3" }
+vCoroutines = { strictly = "1.8.0" }
+
+## Networking
+vKtor = { strictly = "2.3.8" }
+
+[plugins]
+androidLibrary = { id = "com.android.library", version.ref = "vGradle" }
+kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "vKotlin" }
+kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "vKotlin" }
+
+[libraries]
+## Kotlin
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "vKotlin" }
+kotlinSerialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "vKotlinSerialization" }
+coroutinesCore = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "vCoroutines" }
+
+## Ktor
+ktorJson = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "vKtor" }
+ktorClientCore = { module = "io.ktor:ktor-client-core", version.ref = "vKtor" }
+ktorClientJson = { module = "io.ktor:ktor-client-json", version.ref = "vKtor" }
+ktorClientSerialization = { module = "io.ktor:ktor-client-serialization", version.ref = "vKtor" }
+ktorClientNegotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "vKtor" }
+ktorClientAndroid = { module = "io.ktor:ktor-client-okhttp", version.ref = "vKtor" }
+ktorClientJava = { module = "io.ktor:ktor-client-cio", version.ref = "vKtor" }
