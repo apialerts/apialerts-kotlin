@@ -8,21 +8,26 @@ plugins {
 group = "com.apialerts.kotlin.client"
 version = "0.0.1"
 
+val GITHUB_USER: String by project
+val GITHUB_TOKEN: String by project
+
 publishing {
     repositories {
         maven {
-            //...
+            setUrl("https://maven.pkg.github.com/apialerts/apialerts-kotlin")
+            credentials {
+                username = GITHUB_USER
+                password = GITHUB_TOKEN
+            }
         }
     }
 }
 
 kotlin {
     applyDefaultHierarchyTemplate()
-
     androidTarget {
         publishAllLibraryVariants()
     }
-
     jvm()
 
     sourceSets {
@@ -49,11 +54,13 @@ kotlin {
 
 android {
     namespace = "com.apialerts.kotlin.client"
-    compileSdk = 34
+    compileSdk = libs.versions.androidTargetSdk.get().toInt()
+
     defaultConfig {
-        namespace = "io.github.aakira.napier"
-        minSdk = 24
+        namespace = "com.apialerts.kotlin.client"
+        minSdk = libs.versions.androidMinSdk.get().toInt()
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.valueOf("VERSION_" + libs.versions.javaSdk.get())
         targetCompatibility = JavaVersion.valueOf("VERSION_" + libs.versions.javaSdk.get())
