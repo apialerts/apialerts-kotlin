@@ -16,7 +16,7 @@ publishing {
         maven {
             setUrl("https://maven.pkg.github.com/apialerts/apialerts-kotlin")
             credentials {
-                username = GITHUB_USER
+                username = "apialerts"
                 password = GITHUB_TOKEN
             }
         }

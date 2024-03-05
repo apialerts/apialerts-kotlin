@@ -11,7 +11,7 @@ class ApiAlerts private constructor() {
             alerts.client.configure(apiKey, logging)
         }
 
-        fun send(apiKey: String? = null, message: String, tags: List<String>? = null, link: String? = null) {
+        fun send(message: String, tags: List<String>? = null, link: String? = null, apiKey: String? = null) {
             alerts.client.send(apiKey, message, tags, link)
         }
     }
