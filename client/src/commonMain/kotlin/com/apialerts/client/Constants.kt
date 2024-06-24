@@ -1,4 +1,4 @@
-package com.apialerts.kotlin.client
+package com.apialerts.client
 
 const val BASE_URL = "https://api.apialerts.com"
 const val INTEGRATION_NAME = "kotlin"

@@ -1,4 +1,4 @@
-package com.apialerts.kotlin.client.contract
+package com.apialerts.client.contract
 
 import kotlinx.serialization.Serializable
 

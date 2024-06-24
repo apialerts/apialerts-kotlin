@@ -1,4 +1,4 @@
-package com.apialerts.kotlin.client.network
+package com.apialerts.client.network
 
 sealed class ResourceResult<T> {
     class Success<T>(val data: T) : ResourceResult<T>()

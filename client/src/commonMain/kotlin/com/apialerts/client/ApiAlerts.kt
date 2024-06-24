@@ -1,4 +1,4 @@
-package com.apialerts.kotlin.client
+package com.apialerts.client
 
 class ApiAlerts private constructor() {
 

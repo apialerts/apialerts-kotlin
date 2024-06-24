@@ -1,4 +1,4 @@
-package com.apialerts.kotlin.client.network
+package com.apialerts.client.network
 
 data class ErrorObject(
     val message: String

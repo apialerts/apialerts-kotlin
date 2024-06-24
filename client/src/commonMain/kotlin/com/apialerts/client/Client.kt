@@ -1,9 +1,9 @@
-package com.apialerts.kotlin.client
+package com.apialerts.client
 
-import com.apialerts.kotlin.client.contract.EventRequest
-import com.apialerts.kotlin.client.network.Network
-import com.apialerts.kotlin.client.network.ResourceResult
-import com.apialerts.kotlin.client.network.createHttpClient
+import com.apialerts.client.contract.EventRequest
+import com.apialerts.client.network.Network
+import com.apialerts.client.network.ResourceResult
+import com.apialerts.client.network.createHttpClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -32,12 +32,12 @@ internal class Client {
         val useKey = apiKey ?: this.defaultKey
 
         if (useKey == null) {
-            println("APIAlerts -> Project API Key not provided. Use setApiKey(apiKey: String) to set a default key, or pass the key as a parameter to the send function.")
+            println("APIAlerts -> Project API Key not provided. Use configure(apiKey: String) to set a default key, or pass the key as a parameter to the send function.")
             return
         }
 
         if (message.isBlank()) {
-            println("Message is required")
+            println("APIAlerts -> Message is required")
             return
         }
 

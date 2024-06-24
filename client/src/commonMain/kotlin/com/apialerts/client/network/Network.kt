@@ -1,8 +1,8 @@
-package com.apialerts.kotlin.client.network
+package com.apialerts.client.network
 
-import com.apialerts.kotlin.client.BASE_URL
-import com.apialerts.kotlin.client.contract.EventRequest
-import com.apialerts.kotlin.client.contract.EventResponse
+import com.apialerts.client.BASE_URL
+import com.apialerts.client.contract.EventRequest
+import com.apialerts.client.contract.EventResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.headers

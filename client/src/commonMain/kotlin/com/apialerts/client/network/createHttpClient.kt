@@ -1,7 +1,7 @@
-package com.apialerts.kotlin.client.network
+package com.apialerts.client.network
 
-import com.apialerts.kotlin.client.INTEGRATION_NAME
-import com.apialerts.kotlin.client.VERSION
+import com.apialerts.client.INTEGRATION_NAME
+import com.apialerts.client.VERSION
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.HttpTimeout

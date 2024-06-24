@@ -2,6 +2,7 @@ rootProject.name = "apialerts-kotlin"
 
 pluginManagement {
     repositories {
+        mavenLocal()
         google()
         gradlePluginPortal()
         mavenCentral()
@@ -10,6 +11,7 @@ pluginManagement {
 
 dependencyResolutionManagement {
     repositories {
+        mavenLocal()
         google()
         mavenCentral()
     }

@@ -1,6 +1,6 @@
 package com.apialerts.sample
 
-import com.apialerts.kotlin.client.ApiAlerts
+import com.apialerts.client.ApiAlerts
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 
@@ -16,7 +16,8 @@ fun main() = runBlocking {
     client.send(
         message = "First integration of apialerts-kotlin",
         tags = listOf("integration", "kotlin"),
-        link = "https://github.com/apialerts/apialerts-kotlin"
+        link = "https://github.com/apialerts/apialerts-kotlin",
+        apiKey = "f1"
     )
 //    client.send(
 //        apiKey = "KEY_2",

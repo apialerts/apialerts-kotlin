@@ -5,23 +5,11 @@ plugins {
     id("maven-publish")
 }
 
-group = "com.apialerts.kotlin.client"
+group = "com.apialerts.client"
 version = "0.0.1"
 
 val GITHUB_USER: String by project
 val GITHUB_TOKEN: String by project
-
-publishing {
-    repositories {
-        maven {
-            setUrl("https://maven.pkg.github.com/apialerts/apialerts-kotlin")
-            credentials {
-                username = "apialerts"
-                password = GITHUB_TOKEN
-            }
-        }
-    }
-}
 
 kotlin {
     applyDefaultHierarchyTemplate()
@@ -53,11 +41,11 @@ kotlin {
 }
 
 android {
-    namespace = "com.apialerts.kotlin.client"
+    namespace = "com.apialerts.client"
     compileSdk = libs.versions.androidTargetSdk.get().toInt()
 
     defaultConfig {
-        namespace = "com.apialerts.kotlin.client"
+        namespace = "com.apialerts.client"
         minSdk = libs.versions.androidMinSdk.get().toInt()
     }
 

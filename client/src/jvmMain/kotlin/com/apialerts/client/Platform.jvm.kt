@@ -1,4 +1,4 @@
-package com.apialerts.kotlin.client
+package com.apialerts.client
 
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.cio.CIO
