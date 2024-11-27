@@ -8,14 +8,14 @@ Add the following dependency to your build.gradle
 
 ```groovy
 dependencies {
-  implementation 'com.apialerts:apialerts:<latest-version>'
+  implementation 'com.apialerts:client:<latest-version>'
 }
 ```
 
 or toml file:
 
 ```toml
-apialerts = { module = "com.apialerts:apialerts", version = "<latest-version>" }
+apialerts = { module = "com.apialerts:client", version = "<latest-version>" }
 ```
 
 Ensure `mavenCentral()` is added to your repository list
