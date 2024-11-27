@@ -25,6 +25,8 @@ fun main() = runBlocking {
         message = "Minimal integration of apialerts-kotlin",
     )
 
-    // delay to ensure the messages are sent
-    delay(10000)
+    // Simple style - async
+    ApiAlerts.sendAsync(
+        message = "Minimal integration of apialerts-kotlin",
+    )
 }
