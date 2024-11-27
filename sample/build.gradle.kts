@@ -4,17 +4,8 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":client"))
+    implementation(project(":library"))
     implementation(libs.coroutinesCore)
-}
-
-java {
-    sourceCompatibility = JavaVersion.valueOf("VERSION_" + libs.versions.javaSdk.get())
-    targetCompatibility = JavaVersion.valueOf("VERSION_" + libs.versions.javaSdk.get())
-}
-
-tasks.compileKotlin {
-    kotlinOptions.jvmTarget = libs.versions.javaSdk.get()
 }
 
 application {

@@ -1,23 +1,20 @@
-rootProject.name = "apialerts-kotlin"
-
 pluginManagement {
     repositories {
-        mavenLocal()
         google()
-        gradlePluginPortal()
         mavenCentral()
+        gradlePluginPortal()
     }
 }
 
 dependencyResolutionManagement {
     repositories {
-        mavenLocal()
         google()
         mavenCentral()
     }
 }
 
+rootProject.name = "apialerts-kotlin"
 include(
-    ":client",
+    ":library",
     ":sample"
 )
