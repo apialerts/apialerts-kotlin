@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.vanniktechMavenPublish)
 }
 
-group = "com.apialerts.client"
+group = "com.apialerts"
 version = "0.0.1"
 
 kotlin {
