@@ -59,9 +59,9 @@ internal class ClientImpl : Client {
         when(val response = api.send(useKey, payload)) {
             is ResourceResult.Success -> {
                 if (showLogs) {
-                    println("APIAlerts -> Successfully sent event to ${response.data.project ?: "??"}. Remaining Quota = ${response.data.remainingQuota ?: 0}")
+                    println("APIAlerts -> Event sent to ${response.data.project ?: "??"} successfully. Remaining Quota = ${response.data.remainingQuota ?: 0}")
                     response.data.errors?.forEach { item ->
-                        println("APIAlerts Warning -> $item")
+                        println("APIAlerts -> Warning: $item")
                     }
                 }
             }

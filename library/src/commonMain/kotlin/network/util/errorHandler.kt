@@ -14,7 +14,7 @@ internal fun errorHandler(connection: HttpURLConnection): ErrorResponse {
     val response = try {
         connection.inputStream.bufferedReader().use(BufferedReader::readText)
     } catch (e: Exception) {
-        return ErrorResponse("Could not parse error response")
+        return ErrorResponse("Server responded with $responseCode")
     }
     return try {
         json.decodeFromString(ErrorResponse.serializer(), response)
