@@ -1,4 +1,4 @@
-### apialerts-kotlin
+# apialerts-kotlin
 
 Kotlin/Java client for [apialerts.com](https://apialerts.com/)
 

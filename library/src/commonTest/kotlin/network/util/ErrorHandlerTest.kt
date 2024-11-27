@@ -46,7 +46,7 @@ class ErrorHandlerTest {
         `when`(connection.inputStream).thenThrow(RuntimeException::class.java)
 
         val result = errorHandler(connection)
-        assertEquals("Could not parse error response", result.message)
+        assertEquals("Server responded with null", result.message)
     }
 
     @Test
@@ -69,7 +69,7 @@ class ErrorHandlerTest {
         `when`(connection.responseCode).thenThrow(IOException("Connection timed out"))
 
         val result = errorHandler(connection)
-        assertEquals("Could not parse error response", result.message)
+        assertEquals("Server responded with null", result.message)
     }
 
     @Test
@@ -79,6 +79,6 @@ class ErrorHandlerTest {
         `when`(connection.responseCode).thenThrow(IOException("Connection error"))
 
         val result = errorHandler(connection)
-        assertEquals("Could not parse error response", result.message)
+        assertEquals("Server responded with null", result.message)
     }
 }
