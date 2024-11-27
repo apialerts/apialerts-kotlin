@@ -9,19 +9,22 @@ class ApiAlerts private constructor() {
 
         /**
          * Configure the ApiAlerts client
-         * @param apiKey String
+         *
+         * @param apiKey String Workspace API key
+         * @param debug Boolean Set to true to enable debug logging
          */
-        fun configure(apiKey: String, logging: Boolean) {
-            alerts.client.configure(apiKey, logging)
+        fun configure(apiKey: String, debug: Boolean = false) {
+            alerts.client.configure(apiKey, debug)
         }
 
         /**
          * Send an alert
-         * @param apiKey String? = null
-         * @param channel String
-         * @param message String
-         * @param tags List<String>? = null
-         * @param link String? = null
+         *
+         * @param apiKey String? Uses the default Workspace API key if not provided.
+         * @param channel String Optional channel to send the alert to. Uses the default channel set if not provided.
+         * @param message String The message to send.
+         * @param tags List<String>? Optional tags to attach to the alert.
+         * @param link String? Optional link to attach to the alert.
          */
         fun send(apiKey: String? = null, channel: String? = null, message: String, tags: List<String>? = null, link: String? = null) {
             alerts.client.send(
@@ -52,14 +55,12 @@ class ApiAlerts private constructor() {
 
 class SendRequestBuilder {
     /**
-     * Workspace API key
-     * Not required if already set via ApiAlerts.configure(). Must set one or the other, or both
+     * Uses the default Workspace API key if not provided.
      */
     var apiKey: String? = null
 
     /**
-     * Optional channel to send the alert to.
-     * Uses the default channel set if not provided.
+     * Optional channel to send the alert to. Uses the default channel set if not provided.
      */
     var channel: String? = null
 

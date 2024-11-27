@@ -8,7 +8,7 @@ fun main() = runBlocking {
 
     ApiAlerts.configure(
         apiKey = "your-api-key",
-        logging = true
+        debug = true
     )
 
     // DSL style

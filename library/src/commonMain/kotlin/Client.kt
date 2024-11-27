@@ -9,9 +9,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 internal interface Client {
-    fun configure(apiKey: String, logging: Boolean = false)
-    fun send(apiKey: String? = null, channel: String? = null, message: String, tags: List<String>? = null, link: String? = null)
-    suspend fun sendAsync(apiKey: String? = null, channel: String? = null, message: String, tags: List<String>? = null, link: String? = null)
+    fun configure(apiKey: String, debug: Boolean)
+    fun send(apiKey: String?, channel: String?, message: String, tags: List<String>?, link: String?)
+    suspend fun sendAsync(apiKey: String?, channel: String?, message: String, tags: List<String>?, link: String?)
 }
 
 internal class ClientImpl : Client {
@@ -25,9 +25,9 @@ internal class ClientImpl : Client {
     private var showLogs = false
 
     // Set the default API Key to use for all send requests
-    override fun configure(apiKey: String, logging: Boolean) {
+    override fun configure(apiKey: String, debug: Boolean) {
         defaultKey = apiKey
-        showLogs = logging
+        showLogs = debug
     }
 
     override fun send(apiKey: String?, channel: String?, message: String, tags: List<String>?, link: String?) {
