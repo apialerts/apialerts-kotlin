@@ -2,7 +2,7 @@
 
 Kotlin/Java client for the [apialerts.com](https://apialerts.com/) platform
 
-[Docs](https://apialerts.com/docs/kotlin) • [GitHub](https://github.com/apialerts/apialerts-kotlin)
+[Docs](https://apialerts.com/docs/kotlin) • [GitHub](https://github.com/apialerts/apialerts-kotlin) • [Maven](https://central.sonatype.com/artifact/com.apialerts/client/overview)
 
 ## Installation
 
@@ -33,9 +33,9 @@ ApiAlerts.configure(
 )
 ```
 
-### Send message with custom api key
+### Send Event
 
-You can send alerts using the simple style or DSL style.  
+You can send alerts using the simple style or DSL style.
 
 Simple Style
 ```kotlin
