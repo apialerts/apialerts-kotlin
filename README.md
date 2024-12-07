@@ -1,6 +1,8 @@
 # apialerts-kotlin
 
-Kotlin/Java client for [apialerts.com](https://apialerts.com/)
+Kotlin/Java client for the [apialerts.com](https://apialerts.com/) platform
+
+[Docs](https://apialerts.com/docs/kotlin) • [GitHub](https://github.com/apialerts/apialerts-kotlin)
 
 ## Installation
 
@@ -57,5 +59,5 @@ ApiAlerts.send {
 }
 ```
 
-The ApiAlerts.sendAsync methods are also available if you need to wait for a successful execution.
+The ApiAlerts.sendAsync methods are also available if you need to wait for a successful execution. However, the send() functions are generally always preferred. 
 
