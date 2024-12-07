@@ -59,5 +59,9 @@ ApiAlerts.send {
 }
 ```
 
-The ApiAlerts.sendAsync methods are also available if you need to wait for a successful execution. However, the send() functions are generally always preferred. 
+The ApiAlerts.sendAsync methods are also available if you need to wait for a successful execution. However, the send() functions are generally always preferred.
+
+### Feedback & Support
+
+If you have any questions or feedback, please create an issue on our GitHub repository. We are always looking to improve our service and would love to hear from you. Thanks for using API Alerts!
 
