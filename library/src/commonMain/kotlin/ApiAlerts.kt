@@ -37,7 +37,8 @@ class ApiAlerts private constructor() {
         }
 
         /**
-         * Send an alert - Async
+         * Send an alert
+         * Async suspend function that will wait for a response
          *
          * @param apiKey String? Uses the default Workspace API key if not provided.
          * @param channel String Optional channel to send the alert to. Uses the default channel set if not provided.
@@ -71,12 +72,14 @@ class ApiAlerts private constructor() {
         }
 
         /**
-         * DSL function to send an alert - Async
+         * DSL function to send an alert
+         * Async suspend function that will wait for a response
+         *
          * @param block SendRequestBuilder.() -> Unit
          */
-        fun sendAsync(block: SendRequestBuilder.() -> Unit) {
+        suspend fun sendAsync(block: SendRequestBuilder.() -> Unit) {
             val builder = SendRequestBuilder().apply(block)
-            alerts.client.send(
+            alerts.client.sendAsync(
                 apiKey = builder.apiKey,
                 channel = builder.channel,
                 message = builder.message,
