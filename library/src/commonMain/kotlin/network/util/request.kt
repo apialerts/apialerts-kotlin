@@ -27,7 +27,7 @@ internal suspend fun <T> request(
     connection.setRequestProperty("Authorization", "Bearer $apiKey")
     connection.setRequestProperty("Content-Type", "application/json")
     connection.setRequestProperty("X-Integration", INTEGRATION_NAME)
-    connection.setRequestProperty("X-Device-Name", VERSION)
+    connection.setRequestProperty("X-Version", VERSION)
     connection.doOutput = true
 
     connection.outputStream.use { it.write(payload.toByteArray()) }
