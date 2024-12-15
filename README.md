@@ -33,7 +33,7 @@ ApiAlerts.configure(
 )
 ```
 
-### Send Event
+### Send Events
 
 You can send alerts using the simple style or DSL style.
 
