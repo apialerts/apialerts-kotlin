@@ -17,7 +17,7 @@ fun main(args: Array<String>) = runBlocking {
     val eventChannel = "developer"
     var eventMessage = "apialerts-kotlin"
     var eventTags: List<String>? = null
-    val eventLink = "https://github.com/apialerts/apialerts-js/actions"
+    val eventLink = "https://github.com/apialerts/apialerts-kotlin/actions"
 
     when {
         args.any { it == "--build" } -> {
