@@ -14,7 +14,7 @@ fun main(args: Array<String>) = runBlocking {
         debug = true
     )
 
-    val eventChannel = "developer"
+    var eventChannel = "developer"
     var eventMessage = "apialerts-kotlin"
     var eventTags: List<String>? = null
     val eventLink = "https://github.com/apialerts/apialerts-kotlin/actions"
@@ -29,6 +29,7 @@ fun main(args: Array<String>) = runBlocking {
             eventTags = listOf("CI/CD", "Kotlin", "Build")
         }
         args.any { it == "--publish" } -> {
+            eventChannel = "releases"
             eventMessage = "Kotlin - Maven publish success"
             eventTags = listOf("CI/CD", "Kotlin", "Deploy")
         }
