@@ -22,12 +22,12 @@ internal class ClientImpl : Client {
 
     // Default API Key to use for all send requests
     private var defaultKey: String? = null
-    private var showLogs = false
+    private var debug = false
 
     // Set the default API Key to use for all send requests
     override fun configure(apiKey: String, debug: Boolean) {
         defaultKey = apiKey
-        showLogs = debug
+        this.debug = debug
     }
 
     override fun send(apiKey: String?, channel: String?, message: String, tags: List<String>?, link: String?) {
@@ -40,12 +40,12 @@ internal class ClientImpl : Client {
         val useKey = apiKey ?: this.defaultKey
 
         if (useKey == null) {
-            println("APIAlerts -> API Key not provided. Use configure() to set a default key, or pass the key as a parameter to the send/sendAsync function.")
+            println("x (apialerts.com) Error: API Key not provided. Use configure() to set a default key, or pass the key as a parameter to the send/sendAsync function.")
             return
         }
 
         if (message.isBlank()) {
-            println("APIAlerts -> Message is required")
+            println("x (apialerts.com) Error: Message is required")
             return
         }
 
@@ -58,16 +58,16 @@ internal class ClientImpl : Client {
 
         when(val response = api.send(useKey, payload)) {
             is ResourceResult.Success -> {
-                if (showLogs) {
-                    println("APIAlerts -> Event sent to ${response.data.project ?: "??"} successfully. Remaining Quota = ${response.data.remainingQuota ?: 0}")
+                if (debug) {
+                    println("✓ (apialerts.com) Alert sent to ${response.data.workspace} (${response.data.channel}) successfully.")
                     response.data.errors?.forEach { item ->
-                        println("APIAlerts -> Warning: $item")
+                        println("! (apialerts.com) Warning: $item")
                     }
                 }
             }
             is ResourceResult.Error -> {
-                if (showLogs) {
-                    println("APIAlerts -> Error: ${response.error.message}")
+                if (debug) {
+                    println("x (apialerts.com) Error: ${response.error.message}")
                 }
             }
         }

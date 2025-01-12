@@ -33,7 +33,7 @@ ApiAlerts.configure(
 )
 ```
 
-### Send Event
+### Send Events
 
 You can send alerts using the simple style or DSL style.
 
@@ -64,4 +64,3 @@ The ApiAlerts.sendAsync methods are also available if you need to wait for a suc
 ### Feedback & Support
 
 If you have any questions or feedback, please create an issue on our GitHub repository. We are always looking to improve our service and would love to hear from you. Thanks for using API Alerts!
-
