@@ -1,8 +1,8 @@
-# apialerts-kotlin
+# API Alerts • Kotlin Client
 
-Kotlin/Java client for the [apialerts.com](https://apialerts.com/) platform
+[GitHub Repo](https://github.com/apialerts/apialerts-kotlin) • [Maven](https://central.sonatype.com/artifact/com.apialerts/client/overview)
 
-[Docs](https://apialerts.com/docs/kotlin) • [GitHub](https://github.com/apialerts/apialerts-kotlin) • [Maven](https://central.sonatype.com/artifact/com.apialerts/client/overview)
+This library is compatible with Java 17 and higher. Suitable uses include Java or Kotlin backends or Android applications.
 
 ## Installation
 
@@ -60,7 +60,3 @@ ApiAlerts.send {
 ```
 
 The ApiAlerts.sendAsync methods are also available if you need to wait for a successful execution. However, the send() functions are generally always preferred.
-
-### Feedback & Support
-
-If you have any questions or feedback, please create an issue on our GitHub repository. We are always looking to improve our service and would love to hear from you. Thanks for using API Alerts!
