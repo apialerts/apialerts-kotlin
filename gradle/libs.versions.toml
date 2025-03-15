@@ -1,9 +1,9 @@
 [versions]
-vKotlin = { strictly = "2.0.20" }
-vKotlinSerialization = { strictly = "1.7.3" }
-vCoroutines = { strictly = "1.9.0" }
-vMavenPublish = { strictly = "0.30.0" }
-vMockitoCore = { strictly = "4.0.0" }
+vKotlin = "2.1.10"
+vKotlinSerialization = "1.8.0"
+vCoroutines = "1.10.1"
+vMavenPublish = "0.31.0"
+vMockitoCore = "5.16.0"
 
 [plugins]
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "vKotlin" }
