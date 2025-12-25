@@ -1,4 +1,4 @@
-package com.apialerts.network.contract
+package com.apialerts.contract
 
 import kotlinx.serialization.Serializable
 

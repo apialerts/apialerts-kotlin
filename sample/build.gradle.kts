@@ -5,7 +5,7 @@ plugins {
 
 dependencies {
     implementation(project(":library"))
-    implementation(libs.coroutinesCore)
+    implementation(libs.coroutines.core)
 }
 
 application {

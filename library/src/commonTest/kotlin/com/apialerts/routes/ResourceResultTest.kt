@@ -1,6 +1,7 @@
-package com.apialerts.network
+package com.apialerts.routes
 
-import com.apialerts.network.contract.ErrorResponse
+import com.apialerts.util.ErrorObject
+import com.apialerts.util.ResourceResult
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -15,7 +16,7 @@ class ResourceResultTest {
 
     @Test
     fun `test ResourceResult Error`() {
-        val error = ErrorResponse("Test Error")
+        val error = ErrorObject("Test Error")
         val result: ResourceResult<String> = ResourceResult.Error(error)
         assertEquals(error, (result as ResourceResult.Error).error)
     }

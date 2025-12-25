@@ -1,24 +1,55 @@
 package com.apialerts
 
-import com.apialerts.network.contract.EventRequest
-import com.apialerts.network.Network
-import com.apialerts.network.NetworkImpl
-import com.apialerts.network.ResourceResult
+import com.apialerts.contract.EventRequest
+import com.apialerts.routes.EventRoutes
+import com.apialerts.routes.EventRoutesImpl
+import com.apialerts.util.ResourceResult
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 internal interface Client {
+    /**
+     * Configures the client with a default API key and debug settings.
+     * This is useful for setting a single key for the application lifecycle.
+     *
+     * @param apiKey The default API key to use for all requests.
+     * @param debug Enables or disables debug logging to the console.
+     */
     fun configure(apiKey: String, debug: Boolean)
+
+    /**
+     * Sends an alert in a "fire-and-forget" manner.
+     * This function returns immediately and performs the network request in the background.
+     * This is the recommended method for most client-side applications (e.g., Android, iOS, JS, Desktop).
+     *
+     * @param apiKey The API key to use for this request. If null, the default key from [configure] is used.
+     * @param channel The channel to send the alert to. If null, the default channel for the API key is used.
+     * @param message The content of the alert.
+     * @param tags A list of tags to associate with the alert.
+     * @param link A URL to include with the alert.
+     */
     fun send(apiKey: String?, channel: String?, message: String, tags: List<String>?, link: String?)
+
+    /**
+     * Sends an alert and suspends until the network request is complete.
+     * This is useful in environments where you need to ensure the request has finished before proceeding,
+     * such as in a serverless function or a backend script.
+     *
+     * @param apiKey The API key to use for this request. If null, the default key from [configure] is used.
+     * @param channel The channel to send the alert to. If null, the default channel for the API key is used.
+     * @param message The content of the alert.
+     * @param tags A list of tags to associate with the alert.
+     * @param link A URL to include with the alert.
+     */
     suspend fun sendAsync(apiKey: String?, channel: String?, message: String, tags: List<String>?, link: String?)
 }
 
 internal class ClientImpl : Client {
 
-    private val api: Network = NetworkImpl()
+    private val api: EventRoutes = EventRoutesImpl()
 
-    private val dispatchers = Dispatchers.IO
+    private val dispatchers = Dispatchers.Default
 
     // Default API Key to use for all send requests
     private var defaultKey: String? = null

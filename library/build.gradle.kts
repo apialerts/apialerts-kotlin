@@ -1,30 +1,89 @@
-import com.vanniktech.maven.publish.SonatypeHost
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.kotlinMultiplatformLibrary)
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.vanniktechMavenPublish)
 }
 
 group = "com.apialerts"
-version = "1.0.1"
+version = "1.1.0-alpha01"
 
 kotlin {
+    androidLibrary {
+        namespace = "com.apialerts.client"
+        compileSdk = libs.versions.androidTargetSdk.get().toInt()
+        minSdk = libs.versions.androidMinSdk.get().toInt()
+
+        @Suppress("UnstableApiUsage")
+        optimization {
+            consumerKeepRules.publish = true
+            consumerKeepRules.files.add(File("consumer-rules.pro"))
+        }
+
+        packaging {
+            resources {
+                excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            }
+        }
+
+        compilerOptions {
+            jvmTarget.set(JvmTarget.fromTarget(libs.versions.javaSdk.get()))
+        }
+    }
+
     jvm()
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(libs.versions.javaSdk.get()))
+    }
+
+    js {
+        browser()
+        nodejs()
+    }
+
+    listOf(
+        iosArm64(),
+        iosSimulatorArm64()
+    ).forEach { iosTarget ->
+        iosTarget.binaries.framework {
+            baseName = "APIAlerts"
+            isStatic = true
+        }
+    }
+
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.coroutinesCore)
-            implementation(libs.kotlinSerialization)
+            implementation(libs.coroutines.core)
+            implementation(libs.kotlin.serialization)
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.json)
+            implementation(libs.ktor.client.negotiation)
+            implementation(libs.ktor.client.serialization)
+            implementation(libs.ktor.json)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
             implementation(libs.mockito)
         }
+        androidMain.dependencies {
+            implementation(libs.ktor.client.okhttp)
+        }
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
+        }
+        jvmMain.dependencies {
+            implementation(libs.ktor.client.okhttp)
+        }
+        jsMain.dependencies {
+            implementation(libs.ktor.client.js)
+        }
     }
 }
 
 mavenPublishing {
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    publishToMavenCentral(false)
 
     signAllPublications()
 
