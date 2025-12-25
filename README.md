@@ -1,15 +1,14 @@
 # API Alerts • Kotlin Multiplatform Client
 
-[GitHub Repo](https://github.com/apialerts/apialerts-kotlin) • [Maven](https://central.sonatype.com/artifact/com.apialerts/client/overview)
+[![Platform](https://img.shields.io/badge/kotlin-android%20%7C%20jvm%20%7C%20js%20%7C%20ios/macos%20(arm64)-blue)](https://github.com/apialerts/apialerts-kotlin)
 
-[![Platform](https://img.shields.io/badge/platform-android%20%7C%20jvm%20%7C%20ios%20%7C%20js%20%7C%20macos-blue)](https://github.com/apialerts/apialerts-kotlin)
+[GitHub Repo](https://github.com/apialerts/apialerts-kotlin) • [Maven](https://central.sonatype.com/artifact/com.apialerts/client/overview)
 
 This is a Kotlin Multiplatform library that allows you to send alerts from any supported platform, including:
 - Android
 - JVM 11+ (Java/Kotlin backends)
-- iOS
+- iOS / macOS (Apple Silicon / arm64 only)
 - JavaScript (Browser & Node.js)
-- macOS
 
 ## Installation
 
@@ -35,6 +34,8 @@ sourceSets {
 ```
 
 Ensure `mavenCentral()` is added to your repository list in `settings.gradle.kts`.
+
+> **A note for Swift Developers:** If you are working in a native Swift project, we recommend using our dedicated [apialerts-swift](https://github.com/apialerts/apialerts-swift) library for the most idiomatic experience. This kotlin library is intended for use in Kotlin Multiplatform projects.
 
 ### Alternative: Manual Dependency Declaration
 

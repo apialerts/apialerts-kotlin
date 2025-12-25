@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "com.apialerts"
-version = "1.1.0-alpha01"
+version = "1.1.0-alpha02"
 
 kotlin {
     androidLibrary {
@@ -43,18 +43,9 @@ kotlin {
         nodejs()
     }
 
-    macosX64()
+    iosArm64()
+    iosSimulatorArm64()
     macosArm64()
-
-    listOf(
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "APIAlerts"
-            isStatic = true
-        }
-    }
 
     sourceSets {
         commonMain.dependencies {
