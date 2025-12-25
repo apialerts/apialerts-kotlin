@@ -1,8 +1,5 @@
 name: Publish
 on:
-  push:
-    branches:
-      - feature/#3/kotlin-multiplatform
   release:
     types: [created]
 
