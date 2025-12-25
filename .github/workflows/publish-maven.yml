@@ -6,16 +6,19 @@ on:
 jobs:
   build:
     name: Build and Test
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'adopt'
           cache: gradle
+
       - name: Cache Gradle dependencies
         uses: actions/cache@v3
         with:
@@ -25,8 +28,10 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
+
       - name: Test
-        run: ./gradlew jvmTest
+        run: ./gradlew check
+
       - name: Send Build Alert
         run: ./gradlew :sample:run --args="--release"
         env:
@@ -35,16 +40,19 @@ jobs:
   publish:
     name: Publish
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'adopt'
           cache: gradle
+
       - name: Cache Gradle dependencies
         uses: actions/cache@v3
         with:
@@ -54,6 +62,7 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
+
       - name: Publish
         run: ./gradlew publishToMavenCentral --no-configuration-cache
         env:
@@ -62,6 +71,7 @@ jobs:
           ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{ secrets.SIGNING_KEY_ID }}
           ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_KEY_CONTENTS }}
+
       - name: Send Publish Alert
         run: ./gradlew :sample:run --args="--publish"
         env:
