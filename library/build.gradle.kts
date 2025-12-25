@@ -43,6 +43,9 @@ kotlin {
         nodejs()
     }
 
+    macosX64()
+    macosArm64()
+
     listOf(
         iosArm64(),
         iosSimulatorArm64()
@@ -70,7 +73,7 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.ktor.client.okhttp)
         }
-        iosMain.dependencies {
+        appleMain.dependencies {
             implementation(libs.ktor.client.darwin)
         }
         jvmMain.dependencies {

@@ -1,5 +1,8 @@
 name: Publish
 on:
+  push:
+    branches:
+      - feature/#3/kotlin-multiplatform
   release:
     types: [created]
 
@@ -30,7 +33,7 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: Test
-        run: ./gradlew jvmTest jsTest iosSimulatorArm64Test
+        run: ./gradlew jvmTest jsTest iosSimulatorArm64Test macosArm64Test
 
       - name: Send Build Alert
         run: ./gradlew :sample:run --args="--release"
