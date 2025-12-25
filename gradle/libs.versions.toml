@@ -18,6 +18,7 @@ vanniktechMavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "v
 [libraries]
 kotlin-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "vKotlinSerialization" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "vCoroutines" }
+coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "vCoroutines" }
 ktor-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "vKtor" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "vKtor" }
 ktor-client-json = { module = "io.ktor:ktor-client-json", version.ref = "vKtor" }

@@ -1,6 +1,5 @@
 package com.apialerts.client.contract
 
-import com.apialerts.client.contract.ErrorResponse
 import com.apialerts.client.util.networkJson
 import kotlin.test.Test
 import kotlin.test.assertEquals

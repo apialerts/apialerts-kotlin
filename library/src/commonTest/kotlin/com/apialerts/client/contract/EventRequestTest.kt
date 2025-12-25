@@ -1,6 +1,5 @@
 package com.apialerts.client.contract
 
-import com.apialerts.client.contract.EventRequest
 import kotlin.test.Test
 import kotlin.test.assertNotNull
 
