@@ -6,7 +6,7 @@
 
 This is a Kotlin Multiplatform library that allows you to send alerts from any supported platform, including:
 - Android
-- JVM (Java/Kotlin backends)
+- JVM 11+ (Java/Kotlin backends)
 - iOS
 - JavaScript (Browser & Node.js)
 - macOS
