@@ -10,12 +10,6 @@ plugins {
 group = "com.apialerts"
 version = "1.1.0-alpha01"
 
-tasks.withType<Test> {
-    testLogging {
-        events("passed", "skipped", "failed")
-    }
-}
-
 kotlin {
     androidLibrary {
         namespace = "com.apialerts.client"
