@@ -4,6 +4,7 @@ import com.apialerts.client.contract.EventRequest
 import com.apialerts.client.routes.EventRoutes
 import com.apialerts.client.routes.EventRoutesImpl
 import com.apialerts.client.util.ResourceResult
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -21,7 +22,7 @@ internal interface Client {
     /**
      * Sends an alert in a "fire-and-forget" manner.
      * This function returns immediately and performs the network request in the background.
-     * This is the recommended method for most client-side applications (e.g., Android, iOS, JS, Desktop).
+     * This is the recommended method for most client-side applications (e.g., Android, iOS, Desktop).
      *
      * @param apiKey The API key to use for this request. If null, the default key from [configure] is used.
      * @param channel The channel to send the alert to. If null, the default channel for the API key is used.
@@ -45,11 +46,10 @@ internal interface Client {
     suspend fun sendAsync(apiKey: String?, channel: String?, message: String, tags: List<String>?, link: String?)
 }
 
-internal class ClientImpl : Client {
-
-    private val api: EventRoutes = EventRoutesImpl()
-
-    private val dispatchers = Dispatchers.Default
+internal class ClientImpl(
+    private val api: EventRoutes = EventRoutesImpl(),
+    private val dispatchers: CoroutineDispatcher = Dispatchers.Default
+) : Client {
 
     // Default API Key to use for all send requests
     private var defaultKey: String? = null

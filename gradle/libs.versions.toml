@@ -3,11 +3,10 @@ androidTargetSdk = "36"
 androidMinSdk = "21"
 javaSdk = "11"
 vGradle = "8.12.3"
-vKotlin = "2.2.21"
+vKotlin = "2.3.0"
 vKotlinSerialization = "1.9.0"
 vCoroutines = "1.10.2"
 vMavenPublish = "0.35.0"
-vMockitoCore = "5.21.0"
 vKtor = "3.3.2"
 
 [plugins]
@@ -28,4 +27,3 @@ ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "vKt
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "vKtor" }
 ktor-client-js = { module = "io.ktor:ktor-client-js", version.ref = "vKtor" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "vKotlin" }
-mockito = { module = "org.mockito:mockito-core", version.ref = "vMockitoCore" }

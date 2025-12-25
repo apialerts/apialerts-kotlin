@@ -65,7 +65,6 @@ kotlin {
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
-            implementation(libs.mockito)
         }
         androidMain.dependencies {
             implementation(libs.ktor.client.okhttp)
