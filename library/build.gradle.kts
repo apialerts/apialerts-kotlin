@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "com.apialerts"
-version = "1.1.0-alpha02"
+version = libs.versions.libraryVersion.get()
 
 kotlin {
     androidLibrary {

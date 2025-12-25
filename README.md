@@ -17,7 +17,7 @@ The recommended way to add the dependency is by using the Gradle Version Catalog
 **1. Add the dependency to your `libs.versions.toml` file:**
 ```toml
 [versions]
-apialerts = "<latest-version>"
+apialerts = "1.1.0-alpha02"
 
 [libraries]
 apialerts-client = { module = "com.apialerts:client", version.ref = "apialerts" }
@@ -42,10 +42,10 @@ Ensure `mavenCentral()` is added to your repository list in `settings.gradle.kts
 If you are not using the version catalog, you can add the dependency directly:
 ```kotlin
 // In build.gradle.kts
-implementation("com.apialerts:client:<latest-version>")
+implementation("com.apialerts:client:1.1.0-alpha02")
 
 // In build.gradle (Groovy)
-implementation 'com.apialerts:client:<latest-version>'
+implementation 'com.apialerts:client:1.1.0-alpha02'
 ```
 
 ### Client Initialization

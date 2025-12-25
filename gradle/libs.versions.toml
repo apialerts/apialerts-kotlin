@@ -1,4 +1,5 @@
 [versions]
+libraryVersion = "1.1.0-alpha02"
 androidTargetSdk = "36"
 androidMinSdk = "21"
 javaSdk = "11"
