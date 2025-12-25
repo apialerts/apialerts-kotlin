@@ -30,12 +30,20 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: Test
-        run: ./gradlew check
+        run: ./gradlew check --info
 
       - name: Send Build Alert
         run: ./gradlew :sample:run --args="--release"
         env:
           APIALERTS_API_KEY: ${{ secrets.APIALERTS_API_KEY }}
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: |
+            library/build/
+            sample/build/
 
   publish:
     name: Publish
@@ -62,6 +70,12 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
+
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+          path: .
 
       - name: Publish
         run: ./gradlew publishToMavenCentral --no-configuration-cache
