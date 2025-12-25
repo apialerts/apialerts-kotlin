@@ -1,7 +1,5 @@
-package com.apialerts.routes
+package com.apialerts.client.util
 
-import com.apialerts.util.ErrorObject
-import com.apialerts.util.ResourceResult
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

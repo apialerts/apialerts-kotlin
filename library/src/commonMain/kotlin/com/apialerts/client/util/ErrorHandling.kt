@@ -1,6 +1,6 @@
-package com.apialerts.util
+package com.apialerts.client.util
 
-import com.apialerts.contract.ErrorResponse
+import com.apialerts.client.contract.ErrorResponse
 import io.ktor.client.call.NoTransformationFoundException
 import io.ktor.client.call.body
 import io.ktor.client.network.sockets.ConnectTimeoutException

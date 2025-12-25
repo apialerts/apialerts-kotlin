@@ -1,9 +1,9 @@
-package com.apialerts
+package com.apialerts.client
 
-import com.apialerts.contract.EventRequest
-import com.apialerts.routes.EventRoutes
-import com.apialerts.routes.EventRoutesImpl
-import com.apialerts.util.ResourceResult
+import com.apialerts.client.contract.EventRequest
+import com.apialerts.client.routes.EventRoutes
+import com.apialerts.client.routes.EventRoutesImpl
+import com.apialerts.client.util.ResourceResult
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

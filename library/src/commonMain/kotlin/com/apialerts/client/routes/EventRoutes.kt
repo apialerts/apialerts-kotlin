@@ -1,10 +1,10 @@
-package com.apialerts.routes
+package com.apialerts.client.routes
 
-import com.apialerts.contract.EventRequest
-import com.apialerts.contract.EventResponse
-import com.apialerts.util.ResourceResult
-import com.apialerts.util.asNetworkError
-import com.apialerts.util.createHttpClient
+import com.apialerts.client.contract.EventRequest
+import com.apialerts.client.contract.EventResponse
+import com.apialerts.client.util.ResourceResult
+import com.apialerts.client.util.asNetworkError
+import com.apialerts.client.util.createHttpClient
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.header

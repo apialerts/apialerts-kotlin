@@ -1,4 +1,4 @@
-package com.apialerts
+package com.apialerts.client
 
 import kotlin.test.Test
 import kotlin.test.assertEquals

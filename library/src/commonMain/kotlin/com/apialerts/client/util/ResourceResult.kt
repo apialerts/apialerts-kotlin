@@ -1,4 +1,4 @@
-package com.apialerts.util
+package com.apialerts.client.util
 
 internal sealed class ResourceResult<T> {
     class Success<T>(val data: T) : ResourceResult<T>()

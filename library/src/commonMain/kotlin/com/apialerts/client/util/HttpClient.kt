@@ -1,8 +1,8 @@
-package com.apialerts.util
+package com.apialerts.client.util
 
-import com.apialerts.BASE_URL
-import com.apialerts.INTEGRATION_NAME
-import com.apialerts.VERSION
+import com.apialerts.client.BASE_URL
+import com.apialerts.client.INTEGRATION_NAME
+import com.apialerts.client.VERSION
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation

@@ -1,4 +1,4 @@
-package com.apialerts
+package com.apialerts.client
 
 class ApiAlerts private constructor() {
 

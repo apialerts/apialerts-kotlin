@@ -1,6 +1,6 @@
 package com.apialerts.sample
 
-import com.apialerts.ApiAlerts
+import com.apialerts.client.ApiAlerts
 
 // Initial configuration
 fun sampleConfigure() {
