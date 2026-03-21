@@ -29,18 +29,27 @@ class ApiAlerts private constructor() {
             instance.client.send(EventScope().apply(block).build())
         }
 
-        /** Awaitable send. Never throws — check [SendResult.success] and [SendResult.error]. */
-        suspend fun sendAsync(event: Event): SendResult {
+        /**
+         * Awaitable send. Returns [Result.success] with [SendResult] on delivery,
+         * or [Result.failure] with [ApiAlertsException] on any error.
+         */
+        suspend fun sendAsync(event: Event): Result<SendResult> {
             return instance.client.sendAsync(event)
         }
 
-        /** Awaitable send DSL. Never throws — check [SendResult.success] and [SendResult.error]. */
-        suspend fun sendAsync(block: EventScope.() -> Unit): SendResult {
+        /**
+         * Awaitable send DSL. Returns [Result.success] with [SendResult] on delivery,
+         * or [Result.failure] with [ApiAlertsException] on any error.
+         */
+        suspend fun sendAsync(block: EventScope.() -> Unit): Result<SendResult> {
             return instance.client.sendAsync(EventScope().apply(block).build())
         }
 
-        /** Awaitable send with an explicit API key override. Never throws — check [SendResult.success]. */
-        suspend fun sendWithKeyAsync(apiKey: String, event: Event): SendResult {
+        /**
+         * Awaitable send with an explicit API key override.
+         * Returns [Result.failure] with [ApiAlertsException] on any error.
+         */
+        suspend fun sendWithKeyAsync(apiKey: String, event: Event): Result<SendResult> {
             return instance.client.sendWithKeyAsync(apiKey, event)
         }
     }

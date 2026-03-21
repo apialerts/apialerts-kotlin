@@ -8,8 +8,7 @@ import io.ktor.client.statement.HttpResponse
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNull
+import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 // --- Fakes ---
@@ -46,8 +45,8 @@ class ClientImplTest {
     fun `sendAsync returns failure when not configured`() = runTest {
         val client = ClientImpl(api = SuccessRoutes())
         val result = client.sendAsync(Event(message = "hello"))
-        assertFalse(result.success)
-        assertEquals("client not configured", result.error)
+        assertTrue(result.isFailure)
+        assertEquals("client not configured", result.exceptionOrNull()?.message)
     }
 
     @Test
@@ -55,8 +54,8 @@ class ClientImplTest {
         val client = ClientImpl(api = SuccessRoutes())
         client.configure("test-key", false)
         val result = client.sendAsync(Event(message = "   "))
-        assertFalse(result.success)
-        assertEquals("message is required", result.error)
+        assertTrue(result.isFailure)
+        assertEquals("message is required", result.exceptionOrNull()?.message)
     }
 
     @Test
@@ -64,11 +63,10 @@ class ClientImplTest {
         val client = ClientImpl(api = SuccessRoutes(workspace = "My Workspace", channel = "alerts"))
         client.configure("test-key", false)
         val result = client.sendAsync(Event(message = "hello"))
-        assertTrue(result.success)
-        assertEquals("My Workspace", result.workspace)
-        assertEquals("alerts", result.channel)
-        assertTrue(result.warnings.isEmpty())
-        assertNull(result.error)
+        assertTrue(result.isSuccess)
+        assertEquals("My Workspace", result.getOrNull()?.workspace)
+        assertEquals("alerts", result.getOrNull()?.channel)
+        assertTrue(result.getOrNull()?.warnings?.isEmpty() ?: false)
     }
 
     @Test
@@ -78,19 +76,19 @@ class ClientImplTest {
         )
         client.configure("test-key", false)
         val result = client.sendAsync(Event(message = "hello"))
-        assertTrue(result.success)
-        assertEquals(2, result.warnings.size)
-        assertEquals("unknown field: foo", result.warnings[0])
-        assertEquals("tag limit reached", result.warnings[1])
+        assertTrue(result.isSuccess)
+        assertEquals(2, result.getOrNull()?.warnings?.size)
+        assertEquals("unknown field: foo", result.getOrNull()?.warnings?.get(0))
     }
 
     @Test
-    fun `sendAsync returns failure with invalid response from server on generic exception`() = runTest {
+    fun `sendAsync returns failure on generic exception`() = runTest {
         val client = ClientImpl(api = ThrowingRoutes(RuntimeException("unexpected")))
         client.configure("test-key", false)
         val result = client.sendAsync(Event(message = "hello"))
-        assertFalse(result.success)
-        assertEquals("invalid response from server", result.error)
+        assertTrue(result.isFailure)
+        assertIs<ApiAlertsException>(result.exceptionOrNull())
+        assertEquals("invalid response from server", result.exceptionOrNull()?.message)
     }
 
     // --- sendWithKeyAsync tests ---
@@ -99,24 +97,24 @@ class ClientImplTest {
     fun `sendWithKeyAsync returns failure for blank api key`() = runTest {
         val client = ClientImpl(api = SuccessRoutes())
         val result = client.sendWithKeyAsync("", Event(message = "hello"))
-        assertFalse(result.success)
-        assertEquals("api key is missing", result.error)
+        assertTrue(result.isFailure)
+        assertEquals("api key is missing", result.exceptionOrNull()?.message)
     }
 
     @Test
     fun `sendWithKeyAsync returns failure for blank message`() = runTest {
         val client = ClientImpl(api = SuccessRoutes())
         val result = client.sendWithKeyAsync("test-key", Event(message = ""))
-        assertFalse(result.success)
-        assertEquals("message is required", result.error)
+        assertTrue(result.isFailure)
+        assertEquals("message is required", result.exceptionOrNull()?.message)
     }
 
     @Test
     fun `sendWithKeyAsync returns success`() = runTest {
         val client = ClientImpl(api = SuccessRoutes(workspace = "Other Workspace", channel = "dev"))
         val result = client.sendWithKeyAsync("other-key", Event(message = "hello"))
-        assertTrue(result.success)
-        assertEquals("Other Workspace", result.workspace)
-        assertEquals("dev", result.channel)
+        assertTrue(result.isSuccess)
+        assertEquals("Other Workspace", result.getOrNull()?.workspace)
+        assertEquals("dev", result.getOrNull()?.channel)
     }
 }

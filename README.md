@@ -81,13 +81,10 @@ ApiAlerts.configure("your-api-key")
 // Fire-and-forget — critical errors always logged; HTTP errors logged when debug is enabled
 ApiAlerts.send(Event(message = "Deploy complete"))
 
-// Awaitable send — never throws, check result.success instead
+// Awaitable send — returns kotlin.Result<SendResult>
 val result = ApiAlerts.sendAsync(Event(message = "Deploy complete"))
-if (result.success) {
-    println("Sent to ${result.workspace} (${result.channel})")
-} else {
-    println("Error: ${result.error}")
-}
+result.onSuccess { println("Sent to ${it.workspace} (${it.channel})") }
+result.onFailure { println("Error: ${it.message}") }
 ```
 
 ### DSL style
@@ -133,27 +130,12 @@ val event = Event(
 | `link`    | `String?`    | No       | URL attached to the notification |
 | `data`    | `JsonObject?`| No       | Arbitrary key-value metadata     |
 
-### Instance-based client
-
-Use `ApiAlertsClient` directly when you need multiple clients or want to manage the lifecycle yourself.
-
-```kotlin
-import com.apialerts.client.ApiAlertsClient
-
-val client = ApiAlertsClient("your-api-key", debug = true)
-val result = client.sendAsync(Event(message = "Deploy complete"))
-if (result.success) {
-    println("Sent to ${result.workspace} (${result.channel})")
-}
-```
-
 ### Send to multiple workspaces
 
 ```kotlin
-val result = ApiAlerts.sendWithKeyAsync("other-api-key", Event(message = "Deploy complete"))
-if (result.success) {
-    println("Sent to ${result.workspace} (${result.channel})")
-}
+ApiAlerts.sendWithKeyAsync("other-api-key", Event(message = "Deploy complete"))
+    .onSuccess { println("Sent to ${it.workspace} (${it.channel})") }
+    .onFailure { println("Error: ${it.message}") }
 ```
 
 ## Java Interop
@@ -163,49 +145,21 @@ The library is fully usable from Java. Use `EventBuilder` for a refactor-safe, n
 ```java
 import com.apialerts.client.ApiAlerts;
 import com.apialerts.client.EventBuilder;
-import kotlinx.serialization.json.JsonObject;
-import kotlinx.serialization.json.JsonElementKt;
-import kotlinx.serialization.json.JsonObjectKt;
 
 ApiAlerts.configure("your-api-key", false);
 
+// Fire-and-forget
 ApiAlerts.send(new EventBuilder("Deploy complete").build());
 
-ApiAlerts.send(new EventBuilder("Deploy complete")
-    .channel("releases")
-    .event("ci.deploy")
-    .title("Deployed")
-    .tags(List.of("CI/CD", "Java"))
-    .link("https://github.com/apialerts/apialerts-kotlin/actions")
-    .build());
-
-// With metadata — JsonObject from kotlinx.serialization.json
-JsonObject data = JsonObjectKt.buildJsonObject(builder -> {
-    JsonElementKt.put(builder, "version", "1.0.0");
-    return null;
-});
-ApiAlerts.send(new EventBuilder("Deploy complete").data(data).build());
-```
-
-For awaitable sends, use `ApiAlertsJvm.sendFuture()` which returns a `CompletableFuture`:
-
-```java
-import com.apialerts.client.ApiAlertsJvm;
-
+// CompletableFuture — completes exceptionally with ApiAlertsException on failure
 ApiAlertsJvm.sendFuture(new EventBuilder("Deploy complete").build())
     .thenAccept(result -> {
-        if (result.getSuccess()) {
-            System.out.println("Sent to " + result.getWorkspace() + " (" + result.getChannel() + ")");
-            for (String warning : result.getWarnings()) {
-                System.out.println("Warning: " + warning);
-            }
-        } else {
-            System.out.println("Error: " + result.getError());
-        }
+        System.out.println("Sent to " + result.getWorkspace() + " (" + result.getChannel() + ")");
+    })
+    .exceptionally(e -> {
+        System.err.println("Error: " + e.getMessage());
+        return null;
     });
-
-// Or block synchronously
-SendResult result = ApiAlertsJvm.sendFuture(new EventBuilder("Deploy complete").build()).get();
 ```
 
 > For Swift/Objective-C projects, use the dedicated [apialerts-swift](https://github.com/apialerts/apialerts-swift) package for a more idiomatic experience.

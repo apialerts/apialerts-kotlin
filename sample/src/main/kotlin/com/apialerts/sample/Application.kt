@@ -28,65 +28,58 @@ fun main(args: Array<String>) = runBlocking {
     when {
         // SDK CI notifications — called from build-release.yml / publish-maven.yml
         args.any { it == "--build" } -> {
-            val result = ApiAlerts.sendAsync {
+            ApiAlerts.sendAsync {
                 message = "Kotlin - PR build success"
                 this.channel = "developer"
                 event = "ci.build"
                 title = "Build Passed"
                 tags = listOf("CI/CD", "Kotlin", "Build")
                 this.link = link
-            }
-            if (result.success) {
-                println("✓ Sent to ${result.workspace} (${result.channel})")
-            } else {
-                System.err.println("x Failed: ${result.error}")
+            }.onSuccess {
+                println("✓ Sent to ${it.workspace} (${it.channel})")
+            }.onFailure {
+                System.err.println("x Failed: ${it.message}")
                 exitProcess(1)
             }
         }
         args.any { it == "--release" } -> {
-            val result = ApiAlerts.sendAsync {
+            ApiAlerts.sendAsync {
                 message = "Kotlin - Build for publish success"
                 this.channel = "developer"
                 event = "ci.release"
                 title = "Release Build Passed"
                 tags = listOf("CI/CD", "Kotlin", "Build")
                 this.link = link
-            }
-            if (result.success) {
-                println("✓ Sent to ${result.workspace} (${result.channel})")
-            } else {
-                System.err.println("x Failed: ${result.error}")
+            }.onSuccess {
+                println("✓ Sent to ${it.workspace} (${it.channel})")
+            }.onFailure {
+                System.err.println("x Failed: ${it.message}")
                 exitProcess(1)
             }
         }
         args.any { it == "--publish" } -> {
-            val result = ApiAlerts.sendAsync {
+            ApiAlerts.sendAsync {
                 message = "Kotlin - Maven publish success"
                 this.channel = "releases"
                 event = "ci.publish"
                 title = "Published"
                 tags = listOf("CI/CD", "Kotlin", "Deploy")
                 this.link = link
-            }
-            if (result.success) {
-                println("✓ Sent to ${result.workspace} (${result.channel})")
-            } else {
-                System.err.println("x Failed: ${result.error}")
+            }.onSuccess {
+                println("✓ Sent to ${it.workspace} (${it.channel})")
+            }.onFailure {
+                System.err.println("x Failed: ${it.message}")
                 exitProcess(1)
             }
         }
         args.any { it == "--integration-tests" } -> {
             // Minimal — message only
-            val r1 = ApiAlerts.sendAsync(Event(message = "Kotlin SDK - minimal", channel = channel))
-            if (r1.success) {
-                println("✓ sent to ${r1.workspace} (${r1.channel})")
-            } else {
-                System.err.println("x Error (minimal): ${r1.error}")
-                exitProcess(1)
-            }
+            ApiAlerts.sendAsync(Event(message = "Kotlin SDK - minimal", channel = channel))
+                .onSuccess { println("✓ sent to ${it.workspace} (${it.channel})") }
+                .onFailure { System.err.println("x Error (minimal): ${it.message}"); exitProcess(1) }
 
             // Full — all fields
-            val r2 = ApiAlerts.sendAsync(Event(
+            ApiAlerts.sendAsync(Event(
                 message = "Kotlin SDK - full",
                 channel = channel,
                 event = "sdk.test",
@@ -94,11 +87,11 @@ fun main(args: Array<String>) = runBlocking {
                 tags = listOf("CI/CD", "Kotlin"),
                 link = link,
                 data = buildJsonObject { put("version", "2.0.0") },
-            ))
-            if (r2.success) {
-                println("✓ sent to ${r2.workspace} (${r2.channel})")
-            } else {
-                System.err.println("x Error (full): ${r2.error}")
+            )).onSuccess {
+                println("✓ sent to ${it.workspace} (${it.channel})")
+                it.warnings.forEach { w -> println("! Warning: $w") }
+            }.onFailure {
+                System.err.println("x Error (full): ${it.message}")
                 exitProcess(1)
             }
         }

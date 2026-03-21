@@ -13,8 +13,8 @@ internal interface Client {
     fun configure(apiKey: String, debug: Boolean)
     fun setOverrides(integration: String, version: String, baseUrl: String)
     fun send(event: Event)
-    suspend fun sendAsync(event: Event): SendResult
-    suspend fun sendWithKeyAsync(apiKey: String, event: Event): SendResult
+    suspend fun sendAsync(event: Event): Result<SendResult>
+    suspend fun sendWithKeyAsync(apiKey: String, event: Event): Result<SendResult>
 }
 
 internal class ClientImpl(
@@ -53,36 +53,37 @@ internal class ClientImpl(
         CoroutineScope(dispatchers).launch {
             val result = post(key, event)
             if (debug) {
-                if (!result.success) {
-                    println("x (apialerts.com) Error: ${result.error}")
-                } else {
-                    println("✓ (apialerts.com) Alert sent to ${result.workspace} (${result.channel})")
-                    result.warnings.forEach { println("! (apialerts.com) Warning: $it") }
+                result.onSuccess { sent ->
+                    println("✓ (apialerts.com) Alert sent to ${sent.workspace} (${sent.channel})")
+                    sent.warnings.forEach { println("! (apialerts.com) Warning: $it") }
+                }
+                result.onFailure { e ->
+                    println("x (apialerts.com) Error: ${e.message}")
                 }
             }
         }
     }
 
-    override suspend fun sendAsync(event: Event): SendResult {
+    override suspend fun sendAsync(event: Event): Result<SendResult> {
         val key = defaultKey
-            ?: return SendResult(success = false, error = "client not configured")
+            ?: return Result.failure(ApiAlertsException("client not configured"))
         if (event.message.isBlank()) {
-            return SendResult(success = false, error = "message is required")
+            return Result.failure(ApiAlertsException("message is required"))
         }
         return post(key, event)
     }
 
-    override suspend fun sendWithKeyAsync(apiKey: String, event: Event): SendResult {
+    override suspend fun sendWithKeyAsync(apiKey: String, event: Event): Result<SendResult> {
         if (apiKey.isBlank()) {
-            return SendResult(success = false, error = "api key is missing")
+            return Result.failure(ApiAlertsException("api key is missing"))
         }
         if (event.message.isBlank()) {
-            return SendResult(success = false, error = "message is required")
+            return Result.failure(ApiAlertsException("message is required"))
         }
         return post(apiKey, event)
     }
 
-    private suspend fun post(apiKey: String, event: Event): SendResult {
+    private suspend fun post(apiKey: String, event: Event): Result<SendResult> {
         return try {
             val payload = EventRequest(
                 message = event.message,
@@ -94,24 +95,23 @@ internal class ClientImpl(
                 data = event.data,
             )
             val response = api.send(apiKey, payload, integration, version, baseUrl)
-            SendResult(
-                success = true,
+            Result.success(SendResult(
                 workspace = response.workspace,
                 channel = response.channel,
                 warnings = response.warnings ?: emptyList(),
-            )
+            ))
         } catch (e: ClientRequestException) {
             val code = e.response.status.value
-            val error = when (code) {
+            val message = when (code) {
                 400 -> "bad request"
                 401 -> "unauthorized — check your api key"
                 403 -> "forbidden"
                 429 -> "rate limit exceeded"
                 else -> "unexpected status: $code"
             }
-            SendResult(success = false, error = error)
+            Result.failure(ApiAlertsException(message))
         } catch (e: Exception) {
-            SendResult(success = false, error = "invalid response from server")
+            Result.failure(ApiAlertsException("invalid response from server"))
         }
     }
 }

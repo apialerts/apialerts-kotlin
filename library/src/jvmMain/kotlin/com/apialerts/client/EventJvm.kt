@@ -14,14 +14,14 @@ import java.util.concurrent.CompletableFuture
  * // Fire-and-forget
  * ApiAlerts.send(new EventBuilder("Deploy complete").build());
  *
- * // CompletableFuture (non-blocking)
+ * // CompletableFuture (non-blocking) — completes exceptionally with ApiAlertsException on failure
  * ApiAlertsJvm.sendFuture(new EventBuilder("Deploy complete").build())
  *     .thenAccept(result -> {
- *         if (result.getSuccess()) {
- *             System.out.println("Sent to " + result.getWorkspace());
- *         } else {
- *             System.out.println("Error: " + result.getError());
- *         }
+ *         System.out.println("Sent to " + result.getWorkspace() + " (" + result.getChannel() + ")");
+ *     })
+ *     .exceptionally(e -> {
+ *         System.err.println("Error: " + e.getMessage());
+ *         return null;
  *     });
  * ```
  */
@@ -29,17 +29,17 @@ object ApiAlertsJvm {
 
     /**
      * Sends an event and returns a [CompletableFuture] that resolves to [SendResult].
-     * Never completes exceptionally — check [SendResult.success] instead.
+     * Completes exceptionally with [ApiAlertsException] on failure.
      */
     @JvmStatic
     fun sendFuture(event: Event): CompletableFuture<SendResult> =
-        CoroutineScope(Dispatchers.IO).future { ApiAlerts.sendAsync(event) }
+        CoroutineScope(Dispatchers.IO).future { ApiAlerts.sendAsync(event).getOrThrow() }
 
     /**
      * Sends an event to a specific workspace and returns a [CompletableFuture] that resolves to [SendResult].
-     * Never completes exceptionally — check [SendResult.success] instead.
+     * Completes exceptionally with [ApiAlertsException] on failure.
      */
     @JvmStatic
     fun sendWithKeyFuture(apiKey: String, event: Event): CompletableFuture<SendResult> =
-        CoroutineScope(Dispatchers.IO).future { ApiAlerts.sendWithKeyAsync(apiKey, event) }
+        CoroutineScope(Dispatchers.IO).future { ApiAlerts.sendWithKeyAsync(apiKey, event).getOrThrow() }
 }
