@@ -2,6 +2,7 @@ package com.apialerts.sample
 
 import com.apialerts.client.ApiAlerts
 import com.apialerts.client.Event
+import kotlin.system.exitProcess
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -12,10 +13,12 @@ import kotlinx.serialization.json.put
  */
 fun main(args: Array<String>) = runBlocking {
 
-    ApiAlerts.configure(
-        apiKey = System.getenv("APIALERTS_API_KEY") ?: throw IllegalArgumentException("'APIALERTS_API_KEY' environment variable not provided"),
-        debug = true
-    )
+    val apiKey = System.getenv("APIALERTS_API_KEY") ?: ""
+    if (apiKey.isEmpty()) {
+        System.err.println("Error: APIALERTS_API_KEY environment variable is not set")
+        exitProcess(1)
+    }
+    ApiAlerts.configure(apiKey = apiKey, debug = true)
 
     val link = "https://github.com/apialerts/apialerts-kotlin/actions"
 
@@ -33,7 +36,8 @@ fun main(args: Array<String>) = runBlocking {
             if (result.success) {
                 println("✓ Sent to ${result.workspace} (${result.channel})")
             } else {
-                println("x Failed: ${result.error}")
+                System.err.println("x Failed: ${result.error}")
+                exitProcess(1)
             }
         }
         args.any { it == "--release" } -> {
@@ -48,7 +52,8 @@ fun main(args: Array<String>) = runBlocking {
             if (result.success) {
                 println("✓ Sent to ${result.workspace} (${result.channel})")
             } else {
-                println("x Failed: ${result.error}")
+                System.err.println("x Failed: ${result.error}")
+                exitProcess(1)
             }
         }
         args.any { it == "--publish" } -> {
@@ -63,7 +68,8 @@ fun main(args: Array<String>) = runBlocking {
             if (result.success) {
                 println("✓ Sent to ${result.workspace} (${result.channel})")
             } else {
-                println("x Failed: ${result.error}")
+                System.err.println("x Failed: ${result.error}")
+                exitProcess(1)
             }
         }
         // Integration test — called from apialerts-integration-tests with no args
@@ -73,7 +79,8 @@ fun main(args: Array<String>) = runBlocking {
             if (r1.success) {
                 println("✓ sent to ${r1.workspace} (${r1.channel})")
             } else {
-                println("x Failed: ${r1.error}")
+                System.err.println("x Error (minimal): ${r1.error}")
+                exitProcess(1)
             }
 
             // Full — all fields
@@ -89,7 +96,8 @@ fun main(args: Array<String>) = runBlocking {
             if (r2.success) {
                 println("✓ sent to ${r2.workspace} (${r2.channel})")
             } else {
-                println("x Failed: ${r2.error}")
+                System.err.println("x Error (full): ${r2.error}")
+                exitProcess(1)
             }
         }
     }
