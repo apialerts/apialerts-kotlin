@@ -96,8 +96,8 @@ internal class ClientImpl(
             )
             val response = api.send(apiKey, payload, integration, version, baseUrl)
             Result.success(SendResult(
-                workspace = response.workspace,
-                channel = response.channel,
+                workspace = response.workspace ?: "",
+                channel = response.channel ?: "",
                 warnings = response.warnings ?: emptyList(),
             ))
         } catch (e: ClientRequestException) {

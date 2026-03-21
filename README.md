@@ -26,7 +26,7 @@ Add the dependency to your `libs.versions.toml`:
 
 ```toml
 [versions]
-apialerts = "2.0.0"
+apialerts = "1.1.0"
 
 [libraries]
 apialerts-client = { module = "com.apialerts:client", version.ref = "apialerts" }
@@ -48,12 +48,12 @@ Ensure `mavenCentral()` is in your repository list in `settings.gradle.kts`.
 
 ```kotlin
 // build.gradle.kts
-implementation("com.apialerts:client:2.0.0")
+implementation("com.apialerts:client:1.1.0")
 ```
 
 ```groovy
 // build.gradle (Groovy)
-implementation 'com.apialerts:client:2.0.0'
+implementation 'com.apialerts:client:1.1.0'
 ```
 
 ## Quick Start
@@ -116,7 +116,7 @@ val event = Event(
     title   = "Deployed",
     tags    = listOf("CI/CD", "Kotlin"),
     link    = "https://github.com/apialerts/apialerts-kotlin/actions",
-    data    = buildJsonObject { put("version", "2.0.0") },
+    data    = buildJsonObject { put("version", "1.1.0") },
 )
 ```
 
