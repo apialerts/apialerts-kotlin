@@ -75,7 +75,7 @@ fun main(args: Array<String>) = runBlocking {
         // Integration test — called from apialerts-integration-tests with no args
         else -> {
             // Minimal — message only
-            val r1 = ApiAlerts.sendAsync(Event(message = "Kotlin SDK - minimal"))
+            val r1 = ApiAlerts.sendAsync(Event(message = "Kotlin SDK - minimal", channel = "testing"))
             if (r1.success) {
                 println("✓ sent to ${r1.workspace} (${r1.channel})")
             } else {
@@ -86,7 +86,7 @@ fun main(args: Array<String>) = runBlocking {
             // Full — all fields
             val r2 = ApiAlerts.sendAsync(Event(
                 message = "Kotlin SDK - full",
-                channel = "developer",
+                channel = "testing",
                 event = "sdk.test",
                 title = "Integration Test",
                 tags = listOf("CI/CD", "Kotlin"),
