@@ -32,12 +32,9 @@ fun sampleSimple() {
 suspend fun sampleAsync() {
 
     // Event object style
-    val result = ApiAlerts.sendAsync(Event(message = "Minimal async send"))
-    if (result.success) {
-        println("Sent to ${result.workspace} (${result.channel})")
-    } else {
-        println("Error: ${result.error}")
-    }
+    ApiAlerts.sendAsync(Event(message = "Minimal async send"))
+        .onSuccess { println("Sent to ${it.workspace} (${it.channel})") }
+        .onFailure { println("Error: ${it.message}") }
 
     // DSL builder style
     ApiAlerts.sendAsync {
