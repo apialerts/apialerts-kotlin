@@ -14,4 +14,9 @@ class ConstantsTest {
     fun `test integration name`() {
         assertEquals("kotlin", INTEGRATION_NAME)
     }
+
+    @Test
+    fun `test version`() {
+        assertEquals("2.0.0", VERSION)
+    }
 }

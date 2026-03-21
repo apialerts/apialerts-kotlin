@@ -3,7 +3,7 @@ package com.apialerts.client
 import com.apialerts.client.contract.EventRequest
 import com.apialerts.client.routes.EventRoutes
 import com.apialerts.client.routes.EventRoutesImpl
-import com.apialerts.client.util.ResourceResult
+import io.ktor.client.plugins.ClientRequestException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -11,65 +11,107 @@ import kotlinx.coroutines.launch
 
 internal interface Client {
     fun configure(apiKey: String, debug: Boolean)
-    fun send(apiKey: String?, channel: String?, message: String, tags: List<String>?, link: String?)
-    suspend fun sendAsync(apiKey: String?, channel: String?, message: String, tags: List<String>?, link: String?)
+    fun setOverrides(integration: String, version: String, baseUrl: String)
+    fun send(event: Event)
+    suspend fun sendAsync(event: Event): SendResult
+    suspend fun sendWithKeyAsync(apiKey: String, event: Event): SendResult
 }
 
 internal class ClientImpl(
     private val api: EventRoutes = EventRoutesImpl(),
-    private val dispatchers: CoroutineDispatcher = Dispatchers.Default
+    private val dispatchers: CoroutineDispatcher = Dispatchers.Default,
 ) : Client {
 
-    // Default API Key to use for all send requests
     private var defaultKey: String? = null
     private var debug = false
+    private var integration = INTEGRATION_NAME
+    private var version = VERSION
+    private var baseUrl = BASE_URL
 
-    // Set the default API Key to use for all send requests
     override fun configure(apiKey: String, debug: Boolean) {
         defaultKey = apiKey
         this.debug = debug
     }
 
-    override fun send(apiKey: String?, channel: String?, message: String, tags: List<String>?, link: String?) {
+    override fun setOverrides(integration: String, version: String, baseUrl: String) {
+        this.integration = integration
+        this.version = version
+        this.baseUrl = baseUrl
+    }
+
+    override fun send(event: Event) {
+        // Critical errors — always log regardless of debug setting
+        val key = defaultKey
+        if (key == null) {
+            println("x (apialerts.com) Error: client not configured")
+            return
+        }
+        if (event.message.isBlank()) {
+            println("x (apialerts.com) Error: message is required")
+            return
+        }
         CoroutineScope(dispatchers).launch {
-            sendAsync(apiKey, channel, message, tags, link)
+            val result = post(key, event)
+            if (debug) {
+                if (!result.success) {
+                    println("x (apialerts.com) Error: ${result.error}")
+                } else {
+                    println("✓ (apialerts.com) Alert sent to ${result.workspace} (${result.channel})")
+                    result.warnings.forEach { println("! (apialerts.com) Warning: $it") }
+                }
+            }
         }
     }
 
-    override suspend fun sendAsync(apiKey: String?, channel: String?, message: String, tags: List<String>?, link: String?) {
-        val useKey = apiKey ?: this.defaultKey
-
-        if (useKey == null) {
-            println("x (apialerts.com) Error: API Key not provided. Use configure() to set a default key, or pass the key as a parameter to the send/sendAsync function.")
-            return
+    override suspend fun sendAsync(event: Event): SendResult {
+        val key = defaultKey
+            ?: return SendResult(success = false, error = "client not configured")
+        if (event.message.isBlank()) {
+            return SendResult(success = false, error = "message is required")
         }
+        return post(key, event)
+    }
 
-        if (message.isBlank()) {
-            println("x (apialerts.com) Error: Message is required")
-            return
+    override suspend fun sendWithKeyAsync(apiKey: String, event: Event): SendResult {
+        if (apiKey.isBlank()) {
+            return SendResult(success = false, error = "api key is missing")
         }
+        if (event.message.isBlank()) {
+            return SendResult(success = false, error = "message is required")
+        }
+        return post(apiKey, event)
+    }
 
-        val payload = EventRequest(
-            channel = channel,
-            message = message,
-            tags = tags,
-            link = link
-        )
-
-        when(val response = api.send(useKey, payload)) {
-            is ResourceResult.Success -> {
-                if (debug) {
-                    println("✓ (apialerts.com) Alert sent to ${response.data.workspace} (${response.data.channel}) successfully.")
-                    response.data.errors?.forEach { item ->
-                        println("! (apialerts.com) Warning: $item")
-                    }
-                }
+    private suspend fun post(apiKey: String, event: Event): SendResult {
+        return try {
+            val payload = EventRequest(
+                message = event.message,
+                channel = event.channel,
+                event = event.event,
+                title = event.title,
+                tags = event.tags,
+                link = event.link,
+                data = event.data,
+            )
+            val response = api.send(apiKey, payload, integration, version, baseUrl)
+            SendResult(
+                success = true,
+                workspace = response.workspace,
+                channel = response.channel,
+                warnings = response.warnings ?: emptyList(),
+            )
+        } catch (e: ClientRequestException) {
+            val code = e.response.status.value
+            val error = when (code) {
+                400 -> "bad request"
+                401 -> "unauthorized — check your api key"
+                403 -> "forbidden"
+                429 -> "rate limit exceeded"
+                else -> "unexpected status: $code"
             }
-            is ResourceResult.Error -> {
-                if (debug) {
-                    println("x (apialerts.com) Error: ${response.error.message}")
-                }
-            }
+            SendResult(success = false, error = error)
+        } catch (e: Exception) {
+            SendResult(success = false, error = "invalid response from server")
         }
     }
 }

@@ -1,118 +1,67 @@
 package com.apialerts.client
 
+import kotlinx.serialization.json.JsonObject
+
 class ApiAlerts private constructor() {
 
     private val client: Client = ClientImpl()
 
     companion object {
-        private val alerts: ApiAlerts by lazy(LazyThreadSafetyMode.SYNCHRONIZED) { ApiAlerts() }
+        private val instance: ApiAlerts by lazy(LazyThreadSafetyMode.SYNCHRONIZED) { ApiAlerts() }
 
-        /**
-         * Configure the ApiAlerts client
-         *
-         * @param apiKey String Workspace API key
-         * @param debug Boolean Set to true to enable debug logging
-         */
+        /** Configure the global client. Subsequent calls are no-ops. */
         fun configure(apiKey: String, debug: Boolean = false) {
-            alerts.client.configure(apiKey, debug)
+            instance.client.configure(apiKey, debug)
         }
 
-        /**
-         * Send an alert
-         *
-         * @param apiKey String? Uses the default Workspace API key if not provided.
-         * @param channel String Optional channel to send the alert to. Uses the default channel set if not provided.
-         * @param message String The message to send.
-         * @param tags List<String>? Optional tags to attach to the alert.
-         * @param link String? Optional link to attach to the alert.
-         */
-        fun send(apiKey: String? = null, channel: String? = null, message: String, tags: List<String>? = null, link: String? = null) {
-            alerts.client.send(
-                apiKey = apiKey,
-                channel = channel,
-                message = message,
-                tags = tags,
-                link = link
-            )
+        /** Override integration name, version, and base URL. For first-party integrations only. */
+        fun setOverrides(integration: String, version: String, baseUrl: String) {
+            instance.client.setOverrides(integration, version, baseUrl)
         }
 
-        /**
-         * Send an alert
-         * Async suspend function that will wait for a response
-         *
-         * @param apiKey String? Uses the default Workspace API key if not provided.
-         * @param channel String Optional channel to send the alert to. Uses the default channel set if not provided.
-         * @param message String The message to send.
-         * @param tags List<String>? Optional tags to attach to the alert.
-         * @param link String? Optional link to attach to the alert.
-         */
-        suspend fun sendAsync(apiKey: String? = null, channel: String? = null, message: String, tags: List<String>? = null, link: String? = null) {
-            alerts.client.sendAsync(
-                apiKey = apiKey,
-                channel = channel,
-                message = message,
-                tags = tags,
-                link = link
-            )
+        /** Fire-and-forget. Logs critical errors; HTTP errors only logged when debug is enabled. */
+        fun send(event: Event) {
+            instance.client.send(event)
         }
 
-        /**
-         * DSL function to send an alert
-         * @param block SendRequestBuilder.() -> Unit
-         */
-        fun send(block: SendRequestBuilder.() -> Unit) {
-            val builder = SendRequestBuilder().apply(block)
-            alerts.client.send(
-                apiKey = builder.apiKey,
-                channel = builder.channel,
-                message = builder.message,
-                tags = builder.tags,
-                link = builder.link
-            )
+        /** Fire-and-forget DSL. Logs critical errors; HTTP errors only logged when debug is enabled. */
+        fun send(block: EventScope.() -> Unit) {
+            instance.client.send(EventScope().apply(block).build())
         }
 
-        /**
-         * DSL function to send an alert
-         * Async suspend function that will wait for a response
-         *
-         * @param block SendRequestBuilder.() -> Unit
-         */
-        suspend fun sendAsync(block: SendRequestBuilder.() -> Unit) {
-            val builder = SendRequestBuilder().apply(block)
-            alerts.client.sendAsync(
-                apiKey = builder.apiKey,
-                channel = builder.channel,
-                message = builder.message,
-                tags = builder.tags,
-                link = builder.link
-            )
+        /** Awaitable send. Never throws — check [SendResult.success] and [SendResult.error]. */
+        suspend fun sendAsync(event: Event): SendResult {
+            return instance.client.sendAsync(event)
+        }
+
+        /** Awaitable send DSL. Never throws — check [SendResult.success] and [SendResult.error]. */
+        suspend fun sendAsync(block: EventScope.() -> Unit): SendResult {
+            return instance.client.sendAsync(EventScope().apply(block).build())
+        }
+
+        /** Awaitable send with an explicit API key override. Never throws — check [SendResult.success]. */
+        suspend fun sendWithKeyAsync(apiKey: String, event: Event): SendResult {
+            return instance.client.sendWithKeyAsync(apiKey, event)
         }
     }
 }
 
-class SendRequestBuilder {
-    /**
-     * Uses the default Workspace API key if not provided.
-     */
-    var apiKey: String? = null
-
-    /**
-     * Optional channel to send the alert to. Uses the default channel set if not provided.
-     */
-    var channel: String? = null
-
-    /**
-     * The message to send.
-     */
+class EventScope {
     lateinit var message: String
-
-    /**
-     * Optional Tags to attach to the alert.
-     */
+    var channel: String? = null
+    var event: String? = null
+    var title: String? = null
     var tags: List<String>? = null
-
-    /**
-     * Optional link to attach to the alert.
-     */
     var link: String? = null
+    var data: JsonObject? = null
+
+    internal fun build() = Event(
+        message = message,
+        channel = channel,
+        event = event,
+        title = title,
+        tags = tags,
+        link = link,
+        data = data,
+    )
 }

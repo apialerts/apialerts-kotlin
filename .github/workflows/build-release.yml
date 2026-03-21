@@ -32,7 +32,7 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: Test
-        run: ./gradlew jvmTest jsTest iosSimulatorArm64Test macosArm64Test
+        run: ./gradlew jvmTest jsTest wasmJsTest macosArm64Test
 
       - name: Send Build Alert
         run: ./gradlew :sample:run --args="--release"

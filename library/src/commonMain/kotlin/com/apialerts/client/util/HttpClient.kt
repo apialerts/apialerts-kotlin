@@ -1,13 +1,8 @@
 package com.apialerts.client.util
 
-import com.apialerts.client.BASE_URL
-import com.apialerts.client.INTEGRATION_NAME
-import com.apialerts.client.VERSION
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.plugins.defaultRequest
-import io.ktor.client.request.header
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
@@ -16,22 +11,14 @@ internal fun createHttpClient() = HttpClient {
         json(networkJson)
     }
     install(HttpTimeout) {
-        requestTimeoutMillis = 60000L
-        connectTimeoutMillis = 60000L
-        socketTimeoutMillis = 60000L
+        requestTimeoutMillis = 30000L
+        connectTimeoutMillis = 30000L
+        socketTimeoutMillis = 30000L
     }
-    defaultRequest {
-        url(BASE_URL)
-        header("Content-Type", "application/json")
-        header("X-Integration", INTEGRATION_NAME)
-        header("X-Version", VERSION)
-    }
-    this.expectSuccess = true
+    expectSuccess = true
 }
 
 internal val networkJson = Json {
-    isLenient = false
     ignoreUnknownKeys = true
-    coerceInputValues = true
-    encodeDefaults = true
+    encodeDefaults = false
 }

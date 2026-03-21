@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -43,6 +44,12 @@ kotlin {
         nodejs()
     }
 
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
+        browser()
+        nodejs()
+    }
+
     iosArm64()
     iosSimulatorArm64()
     macosArm64()
@@ -72,6 +79,9 @@ kotlin {
         }
         jsMain.dependencies {
             implementation(libs.ktor.client.js)
+        }
+        wasmJsMain.dependencies {
+            implementation(libs.ktor.client.wasmjs)
         }
     }
 }
