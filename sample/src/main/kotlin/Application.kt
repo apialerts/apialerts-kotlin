@@ -22,6 +22,9 @@ fun main(args: Array<String>) = runBlocking {
 
     val link = "https://github.com/apialerts/apialerts-kotlin/actions"
 
+    val channelIdx = args.indexOf("--channel")
+    val channel = if (channelIdx >= 0) args.getOrNull(channelIdx + 1) ?: "testing" else "testing"
+
     when {
         // SDK CI notifications — called from build-release.yml / publish-maven.yml
         args.any { it == "--build" } -> {
@@ -72,10 +75,9 @@ fun main(args: Array<String>) = runBlocking {
                 exitProcess(1)
             }
         }
-        // Integration test — called from apialerts-integration-tests with no args
-        else -> {
+        args.any { it == "--integration-tests" } -> {
             // Minimal — message only
-            val r1 = ApiAlerts.sendAsync(Event(message = "Kotlin SDK - minimal", channel = "testing"))
+            val r1 = ApiAlerts.sendAsync(Event(message = "Kotlin SDK - minimal", channel = channel))
             if (r1.success) {
                 println("✓ sent to ${r1.workspace} (${r1.channel})")
             } else {
@@ -86,7 +88,7 @@ fun main(args: Array<String>) = runBlocking {
             // Full — all fields
             val r2 = ApiAlerts.sendAsync(Event(
                 message = "Kotlin SDK - full",
-                channel = "testing",
+                channel = channel,
                 event = "sdk.test",
                 title = "Integration Test",
                 tags = listOf("CI/CD", "Kotlin"),
@@ -99,6 +101,10 @@ fun main(args: Array<String>) = runBlocking {
                 System.err.println("x Error (full): ${r2.error}")
                 exitProcess(1)
             }
+        }
+        else -> {
+            System.err.println("Error: pass --build, --release, --publish, or --integration-tests")
+            exitProcess(1)
         }
     }
 }
