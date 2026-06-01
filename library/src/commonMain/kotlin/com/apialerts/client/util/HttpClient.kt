@@ -1,5 +1,6 @@
 package com.apialerts.client.util
 
+import com.apialerts.client.TIMEOUT_MS
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -11,9 +12,9 @@ internal fun createHttpClient() = HttpClient {
         json(networkJson)
     }
     install(HttpTimeout) {
-        requestTimeoutMillis = 30000L
-        connectTimeoutMillis = 30000L
-        socketTimeoutMillis = 30000L
+        requestTimeoutMillis = TIMEOUT_MS
+        connectTimeoutMillis = TIMEOUT_MS
+        socketTimeoutMillis = TIMEOUT_MS
     }
     expectSuccess = true
 }

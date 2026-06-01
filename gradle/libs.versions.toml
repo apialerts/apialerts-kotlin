@@ -1,14 +1,15 @@
 [versions]
-libraryVersion = "1.1.0"
+libraryVersion = "1.2.0"
 androidTargetSdk = "36"
 androidMinSdk = "21"
 javaSdk = "11"
 vGradle = "8.12.3"
-vKotlin = "2.2.21"
+vKotlin = "2.3.20"
 vKotlinSerialization = "1.9.0"
 vCoroutines = "1.10.2"
 vMavenPublish = "0.35.0"
-vKtor = "3.4.1"
+vKtor = "3.5.0"
+vKermit = "2.0.5"
 
 [plugins]
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "vKotlin" }
@@ -20,6 +21,7 @@ vanniktechMavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "v
 kotlin-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "vKotlinSerialization" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "vCoroutines" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "vCoroutines" }
+kermit = { module = "co.touchlab:kermit", version.ref = "vKermit" }
 ktor-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "vKtor" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "vKtor" }
 ktor-client-json = { module = "io.ktor:ktor-client-json", version.ref = "vKtor" }
@@ -28,5 +30,6 @@ ktor-client-negotiation = { module = "io.ktor:ktor-client-content-negotiation", 
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "vKtor" }
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "vKtor" }
 ktor-client-js = { module = "io.ktor:ktor-client-js", version.ref = "vKtor" }
-ktor-client-wasmjs = { module = "io.ktor:ktor-client-js", version.ref = "vKtor" }
+ktor-client-curl = { module = "io.ktor:ktor-client-curl", version.ref = "vKtor" }
+ktor-client-winhttp = { module = "io.ktor:ktor-client-winhttp", version.ref = "vKtor" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "vKotlin" }

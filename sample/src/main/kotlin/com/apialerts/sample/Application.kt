@@ -29,7 +29,7 @@ fun main(args: Array<String>) {
                 ApiAlerts.sendAsync {
                     message = "Kotlin - PR build success"
                     this.channel = "developer"
-                    event = "ci.build"
+                    event = "ci.sdk.build.kotlin"
                     title = "Build Passed"
                     tags = listOf("CI/CD", "Kotlin", "Build")
                     this.link = link
@@ -44,7 +44,7 @@ fun main(args: Array<String>) {
                 ApiAlerts.sendAsync {
                     message = "Kotlin - Build for publish success"
                     this.channel = "developer"
-                    event = "ci.release"
+                    event = "ci.sdk.release.kotlin"
                     title = "Release Build Passed"
                     tags = listOf("CI/CD", "Kotlin", "Build")
                     this.link = link
@@ -59,7 +59,7 @@ fun main(args: Array<String>) {
                 ApiAlerts.sendAsync {
                     message = "Kotlin - Maven publish success"
                     this.channel = "releases"
-                    event = "ci.publish"
+                    event = "ci.sdk.publish.kotlin"
                     title = "Published"
                     tags = listOf("CI/CD", "Kotlin", "Deploy")
                     this.link = link

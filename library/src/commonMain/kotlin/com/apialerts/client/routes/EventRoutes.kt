@@ -30,7 +30,7 @@ internal class EventRoutesImpl(
         version: String,
         baseUrl: String,
     ): EventResponse {
-        return httpClient.post("$baseUrl/event") {
+        return httpClient.post(baseUrl) {
             header("Authorization", "Bearer $apiKey")
             header("Content-Type", "application/json")
             header("X-Integration", integration)

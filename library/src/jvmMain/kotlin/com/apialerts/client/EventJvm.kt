@@ -6,15 +6,17 @@ import kotlinx.coroutines.future.future
 import java.util.concurrent.CompletableFuture
 
 /**
- * Java-friendly helpers for the API Alerts SDK.
- * Kotlin callers should use [ApiAlerts], [Event], and [EventBuilder] directly.
+ * Java-friendly delivery helper. Kotlin callers should use [ApiAlerts]
+ * directly with `suspend` functions.
  *
- * Usage from Java:
+ * Java callers cannot easily call `suspend fun sendAsync(...)`, so this
+ * helper bridges to [CompletableFuture]:
+ *
  * ```java
  * // Fire-and-forget
  * ApiAlerts.send(new EventBuilder("Deploy complete").build());
  *
- * // CompletableFuture (non-blocking) — completes exceptionally with ApiAlertsException on failure
+ * // Awaitable - completes exceptionally with ApiAlertsException on failure
  * ApiAlertsJvm.sendFuture(new EventBuilder("Deploy complete").build())
  *     .thenAccept(result -> {
  *         System.out.println("Sent to " + result.getWorkspace() + " (" + result.getChannel() + ")");
@@ -28,18 +30,16 @@ import java.util.concurrent.CompletableFuture
 object ApiAlertsJvm {
 
     /**
-     * Sends an event and returns a [CompletableFuture] that resolves to [SendResult].
-     * Completes exceptionally with [ApiAlertsException] on failure.
+     * Awaitable delivery. Returns a [CompletableFuture] that completes with
+     * [SendResult] on success or completes exceptionally with
+     * [ApiAlertsException] on failure.
+     *
+     * @param event The event to deliver. Only [Event.message] is required.
+     * @param apiKey Optional one-shot override of the configured key.
+     *   Useful for sending to multiple workspaces from the same process.
      */
     @JvmStatic
-    fun sendFuture(event: Event): CompletableFuture<SendResult> =
-        CoroutineScope(Dispatchers.IO).future { ApiAlerts.sendAsync(event).getOrThrow() }
-
-    /**
-     * Sends an event to a specific workspace and returns a [CompletableFuture] that resolves to [SendResult].
-     * Completes exceptionally with [ApiAlertsException] on failure.
-     */
-    @JvmStatic
-    fun sendWithKeyFuture(apiKey: String, event: Event): CompletableFuture<SendResult> =
-        CoroutineScope(Dispatchers.IO).future { ApiAlerts.sendWithKeyAsync(apiKey, event).getOrThrow() }
+    @JvmOverloads
+    fun sendFuture(event: Event, apiKey: String? = null): CompletableFuture<SendResult> =
+        CoroutineScope(Dispatchers.IO).future { ApiAlerts.sendAsync(event, apiKey).getOrThrow() }
 }

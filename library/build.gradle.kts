@@ -12,6 +12,8 @@ group = "com.apialerts"
 version = libs.versions.libraryVersion.get()
 
 kotlin {
+    applyDefaultHierarchyTemplate()
+
     androidLibrary {
         namespace = "com.apialerts.client"
         compileSdk = libs.versions.androidTargetSdk.get().toInt()
@@ -50,14 +52,27 @@ kotlin {
         nodejs()
     }
 
+    // Apple - ARM64 only (Apple Silicon era)
     iosArm64()
     iosSimulatorArm64()
     macosArm64()
+    watchosArm64()
+    watchosSimulatorArm64()
+    tvosArm64()
+    tvosSimulatorArm64()
+
+    // Linux native
+    linuxX64()
+    linuxArm64()
+
+    // Windows native
+    mingwX64()
 
     sourceSets {
         commonMain.dependencies {
             implementation(libs.coroutines.core)
             implementation(libs.kotlin.serialization)
+            implementation(libs.kermit)
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.json)
             implementation(libs.ktor.client.negotiation)
@@ -71,17 +86,23 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.ktor.client.okhttp)
         }
-        appleMain.dependencies {
-            implementation(libs.ktor.client.darwin)
-        }
         jvmMain.dependencies {
             implementation(libs.ktor.client.okhttp)
+        }
+        appleMain.dependencies {
+            implementation(libs.ktor.client.darwin)
         }
         jsMain.dependencies {
             implementation(libs.ktor.client.js)
         }
         wasmJsMain.dependencies {
-            implementation(libs.ktor.client.wasmjs)
+            implementation(libs.ktor.client.js)
+        }
+        linuxMain.dependencies {
+            implementation(libs.ktor.client.curl)
+        }
+        mingwMain.dependencies {
+            implementation(libs.ktor.client.winhttp)
         }
     }
 }
@@ -95,7 +116,7 @@ mavenPublishing {
 
     pom {
         name = "API Alerts"
-        description = "Kotlin SDK for the API Alerts platform"
+        description = "Kotlin Multiplatform SDK for the API Alerts platform"
         inceptionYear = "2024"
         url = "https://github.com/apialerts/apialerts-kotlin"
         licenses {

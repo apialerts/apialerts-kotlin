@@ -91,28 +91,28 @@ class ClientImplTest {
         assertEquals("invalid response from server", result.exceptionOrNull()?.message)
     }
 
-    // --- sendWithKeyAsync tests ---
+    // --- api key override tests ---
 
     @Test
-    fun `sendWithKeyAsync returns failure for blank api key`() = runTest {
+    fun `sendAsync returns failure for blank api key override`() = runTest {
         val client = ClientImpl(api = SuccessRoutes())
-        val result = client.sendWithKeyAsync("", Event(message = "hello"))
+        val result = client.sendAsync(Event(message = "hello"), apiKey = "")
         assertTrue(result.isFailure)
         assertEquals("api key is missing", result.exceptionOrNull()?.message)
     }
 
     @Test
-    fun `sendWithKeyAsync returns failure for blank message`() = runTest {
+    fun `sendAsync with api key override returns failure for blank message`() = runTest {
         val client = ClientImpl(api = SuccessRoutes())
-        val result = client.sendWithKeyAsync("test-key", Event(message = ""))
+        val result = client.sendAsync(Event(message = ""), apiKey = "test-key")
         assertTrue(result.isFailure)
         assertEquals("message is required", result.exceptionOrNull()?.message)
     }
 
     @Test
-    fun `sendWithKeyAsync returns success`() = runTest {
+    fun `sendAsync with api key override returns success`() = runTest {
         val client = ClientImpl(api = SuccessRoutes(workspace = "Other Workspace", channel = "dev"))
-        val result = client.sendWithKeyAsync("other-key", Event(message = "hello"))
+        val result = client.sendAsync(Event(message = "hello"), apiKey = "other-key")
         assertTrue(result.isSuccess)
         assertEquals("Other Workspace", result.getOrNull()?.workspace)
         assertEquals("dev", result.getOrNull()?.channel)

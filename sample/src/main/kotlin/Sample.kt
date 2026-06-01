@@ -21,7 +21,7 @@ fun sampleSimple() {
     ApiAlerts.send {
         message = "Full send"
         channel = "developer"
-        event = "ci.build"
+        event = "ci.sdk.build.kotlin"
         title = "Build complete"
         tags = listOf("CI/CD", "Kotlin")
         link = "https://github.com/apialerts/apialerts-kotlin"

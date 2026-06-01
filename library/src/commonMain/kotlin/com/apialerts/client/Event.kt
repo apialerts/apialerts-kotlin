@@ -3,13 +3,19 @@ package com.apialerts.client
 import kotlinx.serialization.json.JsonObject
 
 /**
- * An event to send to the API Alerts platform.
+ * A single notification dispatched to API Alerts.
  *
- * Only [message] is required. All other fields are optional.
+ * Only [message] is required. All other fields are optional and omitted
+ * from the request body when `null` - they are never serialised as `null`.
  *
  * Kotlin callers can use named parameters or the DSL:
  * ```kotlin
  * val event = Event(message = "Deploy complete", channel = "releases")
+ *
+ * ApiAlerts.send {
+ *     message = "Deploy complete"
+ *     channel = "releases"
+ * }
  * ```
  *
  * Java callers should use [EventBuilder]:
@@ -18,18 +24,41 @@ import kotlinx.serialization.json.JsonObject
  * ```
  */
 data class Event(
-    /** Main notification message. Required. */
+    /**
+     * Human-readable notification text. Required. This is what appears on
+     * the push notification lock screen.
+     */
     val message: String,
-    /** Target channel name. */
+
+    /**
+     * Workspace channel the push notification fires on. Defaults to the
+     * workspace default channel when omitted.
+     */
     val channel: String? = null,
-    /** Event key for routing (e.g. `ci.deploy`). */
+
+    /**
+     * Identifies what kind of thing happened. Optional but recommended.
+     * Use dotted notation (e.g. `ci.deploy.success`, `payment.failed`,
+     * `user.signup`) so routing rules can match glob patterns like `ci.*`
+     * or `*.failed`.
+     */
     val event: String? = null,
-    /** Short title shown above the message. */
+
+    /** Short headline some destinations render separately from the message body. */
     val title: String? = null,
-    /** Categorisation tags. */
+
+    /** Categorisation tags for filtering and search. */
     val tags: List<String>? = null,
-    /** URL attached to the notification. */
+
+    /**
+     * URL associated with the event. Available as a deeplink for push
+     * notifications and as a call-to-action for routed destinations.
+     */
     val link: String? = null,
-    /** Arbitrary JSON metadata. Used as template variables in destination forwarding rules. */
+
+    /**
+     * Arbitrary key-value metadata. Available to non-push destinations for
+     * templating (Slack message bodies, email templates, webhook payloads).
+     */
     val data: JsonObject? = null,
 )

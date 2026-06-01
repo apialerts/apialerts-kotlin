@@ -1,5 +1,6 @@
 package com.apialerts.client
 
+import co.touchlab.kermit.Logger
 import com.apialerts.client.contract.EventRequest
 import com.apialerts.client.routes.EventRoutes
 import com.apialerts.client.routes.EventRoutesImpl
@@ -9,12 +10,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+internal val logger = Logger.withTag("apialerts")
+
 internal interface Client {
     fun configure(apiKey: String, debug: Boolean)
     fun setOverrides(integration: String, version: String, baseUrl: String)
-    fun send(event: Event)
-    suspend fun sendAsync(event: Event): Result<SendResult>
-    suspend fun sendWithKeyAsync(apiKey: String, event: Event): Result<SendResult>
+    fun send(event: Event, apiKey: String? = null)
+    suspend fun sendAsync(event: Event, apiKey: String? = null): Result<SendResult>
 }
 
 internal class ClientImpl(
@@ -39,48 +41,51 @@ internal class ClientImpl(
         this.baseUrl = baseUrl
     }
 
-    override fun send(event: Event) {
-        // Critical errors — always log regardless of debug setting
-        val key = defaultKey
-        if (key == null) {
-            println("x (apialerts.com) Error: client not configured")
-            return
-        }
-        if (event.message.isBlank()) {
-            println("x (apialerts.com) Error: message is required")
-            return
-        }
-        CoroutineScope(dispatchers).launch {
-            val result = post(key, event)
-            if (debug) {
-                result.onSuccess { sent ->
-                    println("✓ (apialerts.com) Alert sent to ${sent.workspace} (${sent.channel})")
-                    sent.warnings.forEach { println("! (apialerts.com) Warning: $it") }
+    override fun send(event: Event, apiKey: String?) {
+        when (val resolved = resolveKey(apiKey)) {
+            is KeyResolution.Error -> logger.e { "x (apialerts.com) Error: ${resolved.message}" }
+            is KeyResolution.Ok -> {
+                if (event.message.isBlank()) {
+                    logger.e { "x (apialerts.com) Error: message is required" }
+                    return
                 }
-                result.onFailure { e ->
-                    println("x (apialerts.com) Error: ${e.message}")
+                CoroutineScope(dispatchers).launch {
+                    val result = post(resolved.key, event)
+                    if (debug) {
+                        result.onSuccess { sent ->
+                            logger.i { "✓ (apialerts.com) Alert sent to ${sent.workspace} (${sent.channel})" }
+                            sent.warnings.forEach { logger.w { "! (apialerts.com) Warning: $it" } }
+                        }
+                        result.onFailure { e ->
+                            logger.e { "x (apialerts.com) Error: ${e.message}" }
+                        }
+                    }
                 }
             }
         }
     }
 
-    override suspend fun sendAsync(event: Event): Result<SendResult> {
-        val key = defaultKey
-            ?: return Result.failure(ApiAlertsException("client not configured"))
+    override suspend fun sendAsync(event: Event, apiKey: String?): Result<SendResult> {
+        val key = when (val resolved = resolveKey(apiKey)) {
+            is KeyResolution.Error -> return Result.failure(ApiAlertsException(resolved.message))
+            is KeyResolution.Ok -> resolved.key
+        }
         if (event.message.isBlank()) {
             return Result.failure(ApiAlertsException("message is required"))
         }
         return post(key, event)
     }
 
-    override suspend fun sendWithKeyAsync(apiKey: String, event: Event): Result<SendResult> {
-        if (apiKey.isBlank()) {
-            return Result.failure(ApiAlertsException("api key is missing"))
-        }
-        if (event.message.isBlank()) {
-            return Result.failure(ApiAlertsException("message is required"))
-        }
-        return post(apiKey, event)
+    private sealed class KeyResolution {
+        data class Ok(val key: String) : KeyResolution()
+        data class Error(val message: String) : KeyResolution()
+    }
+
+    private fun resolveKey(apiKey: String?): KeyResolution = when {
+        apiKey != null && apiKey.isBlank() -> KeyResolution.Error("api key is missing")
+        apiKey != null -> KeyResolution.Ok(apiKey)
+        defaultKey.isNullOrBlank() -> KeyResolution.Error("client not configured")
+        else -> KeyResolution.Ok(defaultKey!!)
     }
 
     private suspend fun post(apiKey: String, event: Event): Result<SendResult> {
@@ -96,15 +101,15 @@ internal class ClientImpl(
             )
             val response = api.send(apiKey, payload, integration, version, baseUrl)
             Result.success(SendResult(
-                workspace = response.workspace ?: "",
-                channel = response.channel ?: "",
+                workspace = response.workspace,
+                channel = response.channel,
                 warnings = response.warnings ?: emptyList(),
             ))
         } catch (e: ClientRequestException) {
             val code = e.response.status.value
             val message = when (code) {
                 400 -> "bad request"
-                401 -> "unauthorized — check your api key"
+                401 -> "unauthorized, check your api key"
                 403 -> "forbidden"
                 429 -> "rate limit exceeded"
                 else -> "unexpected status: $code"
