@@ -1,0 +1,8 @@
+package com.apialerts.client.contract
+
+import kotlinx.serialization.Serializable
+
+@Serializable
+internal data class ErrorResponse(
+    var message: String? = null,
+)

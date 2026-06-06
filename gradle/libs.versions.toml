@@ -1,17 +1,35 @@
 [versions]
-vKotlin = "2.1.10"
-vKotlinSerialization = "1.8.0"
-vCoroutines = "1.10.1"
-vMavenPublish = "0.31.0"
-vMockitoCore = "5.16.0"
+libraryVersion = "1.1.0"
+androidTargetSdk = "36"
+androidMinSdk = "21"
+javaSdk = "11"
+vGradle = "8.13.2"
+vKotlin = "2.4.0"
+vKotlinSerialization = "1.11.0"
+vCoroutines = "1.11.0"
+vMavenPublish = "0.36.0"
+vKtor = "3.5.0"
+vKermit = "2.1.0"
 
 [plugins]
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "vKotlin" }
+kotlinMultiplatformLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "vGradle" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "vKotlin" }
 vanniktechMavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "vMavenPublish" }
 
 [libraries]
+kotlin-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "vKotlinSerialization" }
+coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "vCoroutines" }
+coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "vCoroutines" }
+kermit = { module = "co.touchlab:kermit", version.ref = "vKermit" }
+ktor-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "vKtor" }
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "vKtor" }
+ktor-client-json = { module = "io.ktor:ktor-client-json", version.ref = "vKtor" }
+ktor-client-serialization = { module = "io.ktor:ktor-client-serialization", version.ref = "vKtor" }
+ktor-client-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "vKtor" }
+ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "vKtor" }
+ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "vKtor" }
+ktor-client-js = { module = "io.ktor:ktor-client-js", version.ref = "vKtor" }
+ktor-client-curl = { module = "io.ktor:ktor-client-curl", version.ref = "vKtor" }
+ktor-client-winhttp = { module = "io.ktor:ktor-client-winhttp", version.ref = "vKtor" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "vKotlin" }
-kotlinSerialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "vKotlinSerialization" }
-coroutinesCore = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "vCoroutines" }
-mockito = { module = "org.mockito:mockito-core", version.ref = "vMockitoCore" }

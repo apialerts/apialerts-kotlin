@@ -1,6 +1,7 @@
 package com.apialerts.sample
 
-import com.apialerts.ApiAlerts
+import com.apialerts.client.ApiAlerts
+import com.apialerts.client.Event
 
 // Initial configuration
 fun sampleConfigure() {
@@ -10,36 +11,34 @@ fun sampleConfigure() {
     )
 }
 
-// Simple fire and forget samples
-// Preferred for most use cases
+// Fire-and-forget — preferred for most use cases
 fun sampleSimple() {
 
-    // 1. DSL style
+    // Event object style
+    ApiAlerts.send(Event(message = "Minimal send"))
+
+    // DSL builder style
     ApiAlerts.send {
-        apiKey = "your-api-key"
-        channel = "testing"
-        message = "Full integration of apialerts-kotlin"
-        tags = listOf("integration", "kotlin")
+        message = "Full send"
+        channel = "developer"
+        event = "ci.sdk.build.kotlin"
+        title = "Build complete"
+        tags = listOf("CI/CD", "Kotlin")
         link = "https://github.com/apialerts/apialerts-kotlin"
     }
-
-    // 2. Simple style
-    ApiAlerts.send(
-        message = "Minimal integration of apialerts-kotlin",
-    )
 }
 
-// Async sample where the send function will wait for a response
-// Can be useful in serverless environments where code execution is killed before the event is sent
+// Async — waits for the response; useful in serverless where the process exits immediately
 suspend fun sampleAsync() {
 
-    // 1. DSL style - async
-    ApiAlerts.sendAsync{
-        message = "Full integration of apialerts-kotlin"
-    }
+    // Event object style
+    ApiAlerts.sendAsync(Event(message = "Minimal async send"))
+        .onSuccess { println("Sent to ${it.workspace} (${it.channel})") }
+        .onFailure { println("Error: ${it.message}") }
 
-    // 2. Simple style - async
-    ApiAlerts.sendAsync(
-        message = "Minimal integration of apialerts-kotlin",
-    )
+    // DSL builder style
+    ApiAlerts.sendAsync {
+        message = "Full async send"
+        channel = "developer"
+    }
 }
