@@ -4,10 +4,6 @@ on:
   release:
     types: [released, prereleased]
 
-# Layered gating: linux + windows native test jobs run first on cheap runners.
-# Only if both pass does the expensive mac runner spin up to run the full
-# Apple + JVM + JS test suite and publish to Maven Central.
-
 jobs:
   test-linux:
     name: Test (Linux native)
