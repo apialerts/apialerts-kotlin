@@ -2,12 +2,15 @@ package com.apialerts.client.util
 
 import com.apialerts.client.TIMEOUT_MS
 import io.ktor.client.HttpClient
+import io.ktor.client.HttpClientConfig
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-internal fun createHttpClient() = HttpClient {
+internal expect fun createHttpClient(): HttpClient
+
+internal fun HttpClientConfig<*>.configureApiAlerts() {
     install(ContentNegotiation) {
         json(networkJson)
     }

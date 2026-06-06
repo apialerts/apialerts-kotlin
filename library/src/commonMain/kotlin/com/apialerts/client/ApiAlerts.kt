@@ -1,113 +1,72 @@
 package com.apialerts.client
 
+import kotlin.jvm.JvmOverloads
+import kotlin.jvm.JvmStatic
 import kotlinx.serialization.json.JsonObject
 
 /**
- * Global API Alerts singleton. Call [configure] once at startup, then call
- * [send] / [sendAsync] anywhere in your codebase. There is no public instance
- * client - this static surface is the entire SDK API.
- *
- * Java callers use the same singleton via the static methods on
- * [ApiAlerts.Companion], plus the [ApiAlertsJvm.sendFuture] helper for
- * `CompletableFuture`-based delivery (since `suspend` functions don't bridge
- * cleanly to Java).
+ * Global singleton facade over a default [ApiAlertsClient]. Configure once, then
+ * send anywhere. For DI, test mocking, or multiple keys, use [ApiAlertsClient]
+ * directly. Java callers use the static methods plus [ApiAlertsJvm.sendFuture].
  */
 class ApiAlerts private constructor() {
 
-    private val client: Client = ClientImpl()
+    private val client: ClientImpl = ClientImpl()
 
-    companion object {
+    companion object : ApiAlertsClient {
         private val instance: ApiAlerts by lazy(LazyThreadSafetyMode.SYNCHRONIZED) { ApiAlerts() }
 
-        /**
-         * Initialise the singleton with your workspace API key. The first call
-         * wins; subsequent calls are no-ops, so configure once at startup.
-         *
-         * @param apiKey Workspace API key (Bearer token sent on every request).
-         * @param debug When `true`, success / warning / error messages are
-         *   logged via [co.touchlab.kermit.Logger]. Critical errors (missing
-         *   key, not configured) always log regardless.
-         */
+        /** Configure the singleton. Calling again replaces the key and debug flag. */
+        @JvmStatic
+        @JvmOverloads
         fun configure(apiKey: String, debug: Boolean = false) {
-            instance.client.configure(apiKey, debug)
+            instance.client.configure(apiKey)
+            instance.client.setDebug(debug)
         }
 
-        /**
-         * Override the `X-Integration` / `X-Version` headers and the base URL.
-         *
-         * For wrapper libraries that build on top of this SDK to identify
-         * themselves (e.g. a Ktor server plugin tagging itself as `ktor-apialerts`).
-         * If a wrapper misbehaves we can tell which library is responsible and
-         * report it back to its maintainer. Also used in tests to redirect at a
-         * mock server. Must be called after [configure].
-         */
-        fun setOverrides(integration: String, version: String, baseUrl: String) {
+        /** Enable or disable debug logging at runtime. Critical errors always log. */
+        @JvmStatic
+        override fun setDebug(debug: Boolean) {
+            instance.client.setDebug(debug)
+        }
+
+        /** Override the `X-Integration` / `X-Version` headers and base URL. Internal use. */
+        @JvmStatic
+        override fun setOverrides(integration: String, version: String, baseUrl: String) {
             instance.client.setOverrides(integration, version, baseUrl)
         }
 
-        /**
-         * Fire-and-forget delivery. Returns immediately; the HTTP request runs
-         * in the background. Never throws - errors are silently dropped (or
-         * logged when `debug` is enabled). Use [sendAsync] when you need to
-         * inspect the result.
-         *
-         * @param event The event to deliver. Only [Event.message] is required.
-         * @param apiKey Optional one-shot override of the configured key.
-         *   Useful for sending to multiple workspaces from the same process.
-         */
-        fun send(event: Event, apiKey: String? = null) {
+        /** Fire-and-forget send. Never throws. [apiKey] overrides the configured key for this call. */
+        @JvmStatic
+        override fun send(event: Event, apiKey: String?) {
             instance.client.send(event, apiKey)
         }
 
-        /**
-         * Fire-and-forget DSL form. Build the [Event] inline:
-         *
-         * ```kotlin
-         * ApiAlerts.send {
-         *     message = "Deploy complete"
-         *     channel = "releases"
-         * }
-         * ```
-         */
-        fun send(block: EventScope.() -> Unit) {
+        /** Java convenience: fire-and-forget with no key override. */
+        @JvmStatic
+        fun send(event: Event) {
+            instance.client.send(event, null)
+        }
+
+        /** Fire-and-forget DSL form. */
+        override fun send(block: EventScope.() -> Unit) {
             instance.client.send(EventScope().apply(block).build())
         }
 
-        /**
-         * Awaitable delivery. Returns [Result.success] with [SendResult] on
-         * delivery, or [Result.failure] with [ApiAlertsException] on any error.
-         * Never throws - the failure case is encoded in [Result].
-         *
-         * @param event The event to deliver. Only [Event.message] is required.
-         * @param apiKey Optional one-shot override of the configured key.
-         *   Useful for sending to multiple workspaces from the same process.
-         */
-        suspend fun sendAsync(event: Event, apiKey: String? = null): Result<SendResult> {
+        /** Awaitable send. Returns [Result] with [SendResult] or [ApiAlertsException]; never throws. */
+        @JvmStatic
+        override suspend fun sendAsync(event: Event, apiKey: String?): Result<SendResult> {
             return instance.client.sendAsync(event, apiKey)
         }
 
-        /**
-         * Awaitable DSL form. Build the [Event] inline:
-         *
-         * ```kotlin
-         * val result = ApiAlerts.sendAsync {
-         *     message = "Deploy complete"
-         *     channel = "releases"
-         * }
-         * ```
-         */
-        suspend fun sendAsync(block: EventScope.() -> Unit): Result<SendResult> {
+        /** Awaitable DSL form. */
+        override suspend fun sendAsync(block: EventScope.() -> Unit): Result<SendResult> {
             return instance.client.sendAsync(EventScope().apply(block).build())
         }
     }
 }
 
-/**
- * Builder receiver for the [ApiAlerts.send] / [ApiAlerts.sendAsync] DSL forms.
- *
- * Set [message] (required) and any optional fields, then the surrounding
- * [send] / [sendAsync] call builds the [Event] for you.
- */
+/** Builder for the [ApiAlerts.send] / [ApiAlerts.sendAsync] DSL forms. */
 class EventScope {
     /** Required. Human-readable notification text. */
     lateinit var message: String

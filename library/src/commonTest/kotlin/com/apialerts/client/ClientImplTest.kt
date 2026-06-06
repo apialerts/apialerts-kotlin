@@ -52,7 +52,7 @@ class ClientImplTest {
     @Test
     fun `sendAsync returns failure for blank message`() = runTest {
         val client = ClientImpl(api = SuccessRoutes())
-        client.configure("test-key", false)
+        client.configure("test-key")
         val result = client.sendAsync(Event(message = "   "))
         assertTrue(result.isFailure)
         assertEquals("message is required", result.exceptionOrNull()?.message)
@@ -61,7 +61,7 @@ class ClientImplTest {
     @Test
     fun `sendAsync returns success with workspace and channel`() = runTest {
         val client = ClientImpl(api = SuccessRoutes(workspace = "My Workspace", channel = "alerts"))
-        client.configure("test-key", false)
+        client.configure("test-key")
         val result = client.sendAsync(Event(message = "hello"))
         assertTrue(result.isSuccess)
         assertEquals("My Workspace", result.getOrNull()?.workspace)
@@ -74,7 +74,7 @@ class ClientImplTest {
         val client = ClientImpl(
             api = SuccessRoutes(warnings = listOf("unknown field: foo", "tag limit reached"))
         )
-        client.configure("test-key", false)
+        client.configure("test-key")
         val result = client.sendAsync(Event(message = "hello"))
         assertTrue(result.isSuccess)
         assertEquals(2, result.getOrNull()?.warnings?.size)
@@ -84,7 +84,7 @@ class ClientImplTest {
     @Test
     fun `sendAsync returns failure on generic exception`() = runTest {
         val client = ClientImpl(api = ThrowingRoutes(RuntimeException("unexpected")))
-        client.configure("test-key", false)
+        client.configure("test-key")
         val result = client.sendAsync(Event(message = "hello"))
         assertTrue(result.isFailure)
         assertIs<ApiAlertsException>(result.exceptionOrNull())
@@ -116,5 +116,35 @@ class ClientImplTest {
         assertTrue(result.isSuccess)
         assertEquals("Other Workspace", result.getOrNull()?.workspace)
         assertEquals("dev", result.getOrNull()?.channel)
+    }
+
+    // --- instance (ApiAlertsClient) surface tests ---
+
+    @Test
+    fun `instance behind ApiAlertsClient type delivers via sendAsync`() = runTest {
+        // ClientImpl is the instance behind the public interface. Held as the
+        // interface type, exactly how a DI-injected client is consumed.
+        val client: ApiAlertsClient =
+            ClientImpl(api = SuccessRoutes(workspace = "Injected", channel = "di"))
+                .apply { configure("test-key") }
+        val result = client.sendAsync(Event(message = "hello"))
+        assertTrue(result.isSuccess)
+        assertEquals("Injected", result.getOrNull()?.workspace)
+        assertEquals("di", result.getOrNull()?.channel)
+    }
+
+    @Test
+    fun `instance DSL form builds and delivers the event`() = runTest {
+        // Exercises the default sendAsync(block) method declared on the
+        // ApiAlertsClient interface, not overridden by ClientImpl.
+        val client: ApiAlertsClient =
+            ClientImpl(api = SuccessRoutes(workspace = "DSL Workspace", channel = "dsl"))
+                .apply { configure("test-key") }
+        val result = client.sendAsync {
+            message = "Deploy complete"
+            channel = "dsl"
+        }
+        assertTrue(result.isSuccess)
+        assertEquals("DSL Workspace", result.getOrNull()?.workspace)
     }
 }

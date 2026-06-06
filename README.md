@@ -11,12 +11,12 @@ Kotlin Multiplatform library covering Android, JVM (Java + Kotlin), Apple (iOS/m
 
 ## Supported targets
 
-| Group | Targets |
-|---|---|
-| JVM | `androidLibrary`, `jvm` (Java 11+) |
+| Group              | Targets                                                                                                                   |
+|--------------------|---------------------------------------------------------------------------------------------------------------------------|
+| JVM                | `androidLibrary`, `jvm` (Java 11+)                                                                                        |
 | Apple [^apple-x64] | `iosArm64`, `iosSimulatorArm64`, `macosArm64`, `watchosArm64`, `watchosSimulatorArm64`, `tvosArm64`, `tvosSimulatorArm64` |
-| Web | `js` (browser + Node.js), `wasmJs` (browser + Node.js) |
-| Native | `linuxX64`, `linuxArm64`, `mingwX64` |
+| Web                | `js` (browser + Node.js), `wasmJs` (browser + Node.js)                                                                    |
+| Native             | `linuxX64`, `linuxArm64`, `mingwX64`                                                                                      |
 
 ## Installation
 
@@ -24,7 +24,7 @@ Add the dependency to your `libs.versions.toml`:
 
 ```toml
 [versions]
-apialerts = "1.2.0"
+apialerts = "1.1.0"
 
 [libraries]
 apialerts-client = { module = "com.apialerts:client", version.ref = "apialerts" }
@@ -45,7 +45,7 @@ Ensure `mavenCentral()` is in your repository list.
 ### Manual (without version catalog)
 
 ```kotlin
-implementation("com.apialerts:client:1.2.0")
+implementation("com.apialerts:client:1.1.0")
 ```
 
 ## Quick Start
@@ -118,19 +118,19 @@ val event = Event(
     title   = "Deployed",
     tags    = listOf("CI/CD", "Kotlin"),
     link    = "https://github.com/apialerts/apialerts-kotlin/actions",
-    data    = buildJsonObject { put("version", "1.2.0") },
+    data    = buildJsonObject { put("version", "1.1.0") },
 )
 ```
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `message` | `String` | Yes | Human-readable notification text. This is what appears on the push notification lock screen. |
-| `channel` | `String?` | No | Workspace channel the push notification fires on. Defaults to the workspace default channel when omitted. |
-| `event` | `String?` | No | Identifies what kind of thing happened. Optional but recommended. Use dotted notation (e.g. `ci.deploy.success`, `payment.failed`, `user.signup`) so routing rules can match glob patterns like `ci.*` or `*.failed`. |
-| `title` | `String?` | No | Short headline some destinations render separately from the message body. |
-| `tags` | `List<String>?` | No | Categorisation tags for filtering and search. |
-| `link` | `String?` | No | URL associated with the event. Available as a deeplink for push notifications and as a call-to-action for routed destinations. |
-| `data` | `JsonObject?` | No | Arbitrary key-value metadata. Available to non-push destinations for templating (Slack message bodies, email templates, webhook payloads). |
+| Field     | Type            | Required | Description                                                                                                                                                                                                           |
+|-----------|-----------------|----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `message` | `String`        | Yes      | Human-readable notification text. This is what appears on the push notification lock screen.                                                                                                                          |
+| `channel` | `String?`       | No       | Workspace channel the push notification fires on. Defaults to the workspace default channel when omitted.                                                                                                             |
+| `event`   | `String?`       | No       | Identifies what kind of thing happened. Optional but recommended. Use dotted notation (e.g. `ci.deploy.success`, `payment.failed`, `user.signup`) so routing rules can match glob patterns like `ci.*` or `*.failed`. |
+| `title`   | `String?`       | No       | Short headline some destinations render separately from the message body.                                                                                                                                             |
+| `tags`    | `List<String>?` | No       | Categorisation tags for filtering and search.                                                                                                                                                                         |
+| `link`    | `String?`       | No       | URL associated with the event. Available as a deeplink for push notifications and as a call-to-action for routed destinations.                                                                                        |
+| `data`    | `JsonObject?`   | No       | Arbitrary key-value metadata. Available to non-push destinations for templating (Slack message bodies, email templates, webhook payloads).                                                                            |
 
 ### Send to multiple workspaces
 
@@ -147,22 +147,22 @@ val result = ApiAlerts.sendAsync(
 
 ## API
 
-| Method | Description |
-|---|---|
-| `ApiAlerts.configure(apiKey, debug = false)` | Initialise the singleton. First call wins; subsequent calls are no-ops. |
+| Method                                                  | Description                                                                 |
+|---------------------------------------------------------|-----------------------------------------------------------------------------|
+| `ApiAlerts.configure(apiKey, debug = false)`            | Initialise the singleton. First call wins; subsequent calls are no-ops.     |
 | `ApiAlerts.setOverrides(integration, version, baseUrl)` | For wrapper libraries to identify themselves in the `X-Integration` header. |
-| `ApiAlerts.send(event, apiKey = null)` | Fire-and-forget. Never throws; drops errors silently unless `debug` is on. |
-| `ApiAlerts.send { ... }` | Fire-and-forget DSL form. |
-| `ApiAlerts.sendAsync(event, apiKey = null)` | Awaitable, returns `Result<SendResult>`. Never throws. |
-| `ApiAlerts.sendAsync { ... }` | Awaitable DSL form. |
+| `ApiAlerts.send(event, apiKey = null)`                  | Fire-and-forget. Never throws; drops errors silently unless `debug` is on.  |
+| `ApiAlerts.send { ... }`                                | Fire-and-forget DSL form.                                                   |
+| `ApiAlerts.sendAsync(event, apiKey = null)`             | Awaitable, returns `Result<SendResult>`. Never throws.                      |
+| `ApiAlerts.sendAsync { ... }`                           | Awaitable DSL form.                                                         |
 
 ### SendResult fields
 
-| Field | Type | Description |
-|---|---|---|
-| `workspace` | `String?` | Workspace name (present on success) |
-| `channel` | `String?` | Channel name (present on success) |
-| `warnings` | `List<String>` | Non-fatal server warnings |
+| Field       | Type           | Description                         |
+|-------------|----------------|-------------------------------------|
+| `workspace` | `String?`      | Workspace name (present on success) |
+| `channel`   | `String?`      | Channel name (present on success)   |
+| `warnings`  | `List<String>` | Non-fatal server warnings           |
 
 Errors are surfaced via `Result.failure(ApiAlertsException(message))`, not as fields on `SendResult`.
 

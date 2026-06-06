@@ -8,21 +8,15 @@ import io.ktor.client.plugins.ClientRequestException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
 internal val logger = Logger.withTag("apialerts")
 
-internal interface Client {
-    fun configure(apiKey: String, debug: Boolean)
-    fun setOverrides(integration: String, version: String, baseUrl: String)
-    fun send(event: Event, apiKey: String? = null)
-    suspend fun sendAsync(event: Event, apiKey: String? = null): Result<SendResult>
-}
-
 internal class ClientImpl(
     private val api: EventRoutes = EventRoutesImpl(),
     private val dispatchers: CoroutineDispatcher = Dispatchers.Default,
-) : Client {
+) : ApiAlertsClient {
 
     private var defaultKey: String? = null
     private var debug = false
@@ -30,8 +24,15 @@ internal class ClientImpl(
     private var version = VERSION
     private var baseUrl = BASE_URL
 
-    override fun configure(apiKey: String, debug: Boolean) {
+    // Client-owned scope for fire-and-forget sends. SupervisorJob so one
+    // failure doesn't cancel sibling sends.
+    private val scope = CoroutineScope(SupervisorJob() + dispatchers)
+
+    fun configure(apiKey: String) {
         defaultKey = apiKey
+    }
+
+    override fun setDebug(debug: Boolean) {
         this.debug = debug
     }
 
@@ -49,7 +50,7 @@ internal class ClientImpl(
                     logger.e { "x (apialerts.com) Error: message is required" }
                     return
                 }
-                CoroutineScope(dispatchers).launch {
+                scope.launch {
                     val result = post(resolved.key, event)
                     if (debug) {
                         result.onSuccess { sent ->

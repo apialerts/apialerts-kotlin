@@ -9,16 +9,14 @@
     kotlinx.serialization.KSerializer serializer(...);
 }
 
--keep,includedescriptorclasses class com.apialerts.client.**$$serializer { *; }
--keepclassmembers class com.apialerts.client.** {
+# Keep serializers for the @Serializable wire DTOs (contract package).
+-keep,includedescriptorclasses class com.apialerts.client.contract.**$$serializer { *; }
+-keepclassmembers class com.apialerts.client.contract.** {
     *** Companion;
 }
--keepclasseswithmembers class com.apialerts.client.** {
+-keepclasseswithmembers class com.apialerts.client.contract.** {
     kotlinx.serialization.KSerializer serializer(...);
 }
-
-# Keep all public API classes and contract models
--keep class com.apialerts.client.** { *; }
 
 # ── OkHttp (used by ktor-client-okhttp on Android/JVM) ───────────────────────
 -dontwarn okhttp3.**
