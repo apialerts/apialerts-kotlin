@@ -205,6 +205,15 @@ ApiAlertsJvm.sendFuture(new EventBuilder("Deploy complete").build())
     .exceptionally(e -> { System.err.println("Error: " + e.getMessage()); return null; });
 ```
 
+For dependency injection (Spring), construct an injectable client with `ApiAlertsJvm.client(...)`:
+
+```java
+import com.apialerts.client.ApiAlertsClient;
+
+ApiAlertsClient client = ApiAlertsJvm.client("your-api-key");
+ApiAlertsJvm.sendFuture(client, new EventBuilder("Deploy complete").build());
+```
+
 > For Swift / Objective-C projects, use [apialerts-swift](https://github.com/apialerts/apialerts-swift) instead - more idiomatic Swift surface than this KMP artifact.
 
 ## Links
