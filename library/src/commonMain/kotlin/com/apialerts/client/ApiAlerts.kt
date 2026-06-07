@@ -1,8 +1,8 @@
 package com.apialerts.client
 
+import kotlinx.serialization.json.JsonObject
 import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
-import kotlinx.serialization.json.JsonObject
 
 /**
  * Global singleton facade over a default [ApiAlertsClient]. Configure once, then

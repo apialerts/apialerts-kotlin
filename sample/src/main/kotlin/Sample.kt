@@ -7,13 +7,12 @@ import com.apialerts.client.Event
 fun sampleConfigure() {
     ApiAlerts.configure(
         apiKey = "your-api-key",
-        debug = true
+        debug = true,
     )
 }
 
 // Fire-and-forget — preferred for most use cases
 fun sampleSimple() {
-
     // Event object style
     ApiAlerts.send(Event(message = "Minimal send"))
 
@@ -30,7 +29,6 @@ fun sampleSimple() {
 
 // Async — waits for the response; useful in serverless where the process exits immediately
 suspend fun sampleAsync() {
-
     // Event object style
     ApiAlerts.sendAsync(Event(message = "Minimal async send"))
         .onSuccess { println("Sent to ${it.workspace} (${it.channel})") }

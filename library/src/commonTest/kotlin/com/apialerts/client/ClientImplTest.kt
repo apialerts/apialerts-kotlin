@@ -72,7 +72,7 @@ class ClientImplTest {
     @Test
     fun `sendAsync returns warnings from response`() = runTest {
         val client = ClientImpl(
-            api = SuccessRoutes(warnings = listOf("unknown field: foo", "tag limit reached"))
+            api = SuccessRoutes(warnings = listOf("unknown field: foo", "tag limit reached")),
         )
         client.configure("test-key")
         val result = client.sendAsync(Event(message = "hello"))

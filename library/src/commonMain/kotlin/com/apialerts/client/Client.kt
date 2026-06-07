@@ -101,11 +101,13 @@ internal class ClientImpl(
                 data = event.data,
             )
             val response = api.send(apiKey, payload, integration, version, baseUrl)
-            Result.success(SendResult(
-                workspace = response.workspace,
-                channel = response.channel,
-                warnings = response.warnings ?: emptyList(),
-            ))
+            Result.success(
+                SendResult(
+                    workspace = response.workspace,
+                    channel = response.channel,
+                    warnings = response.warnings ?: emptyList(),
+                ),
+            )
         } catch (e: ClientRequestException) {
             val code = e.response.status.value
             val message = when (code) {

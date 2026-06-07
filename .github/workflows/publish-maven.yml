@@ -64,7 +64,6 @@ jobs:
 
   build:
     name: Build and Test (Apple + JVM + JS)
-    needs: [test-linux, test-windows]
     runs-on: macos-latest
 
     steps:
@@ -94,11 +93,6 @@ jobs:
       - name: Test
         run: ./gradlew jvmTest jsTest wasmJsTest macosArm64Test iosSimulatorArm64Test watchosSimulatorArm64Test tvosSimulatorArm64Test
 
-      - name: Send Build Alert
-        run: ./gradlew :sample:run --args="--release"
-        env:
-          APIALERTS_API_KEY: ${{ secrets.APIALERTS_API_KEY }}
-
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v7
         with:
@@ -109,7 +103,7 @@ jobs:
 
   publish:
     name: Publish to Maven Central
-    needs: build
+    needs: [test-linux, test-windows, build]
     runs-on: macos-latest
 
     steps:
@@ -132,6 +126,11 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
+
+      - name: Send Build Alert
+        run: ./gradlew :sample:run --args="--release"
+        env:
+          APIALERTS_API_KEY: ${{ secrets.APIALERTS_API_KEY }}
 
       - name: Download Build Artifacts
         uses: actions/download-artifact@v8

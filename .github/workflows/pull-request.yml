@@ -31,6 +31,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
+      - name: Lint
+        run: ./gradlew lintKotlin
+
       - name: Assemble all targets
         run: ./gradlew :library:assemble
 

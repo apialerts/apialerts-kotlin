@@ -20,7 +20,7 @@ internal interface EventRoutes {
 }
 
 internal class EventRoutesImpl(
-    private val httpClient: HttpClient = createHttpClient()
+    private val httpClient: HttpClient = createHttpClient(),
 ) : EventRoutes {
 
     override suspend fun send(

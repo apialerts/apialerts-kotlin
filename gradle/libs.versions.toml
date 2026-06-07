@@ -10,12 +10,14 @@ vCoroutines = "1.11.0"
 vMavenPublish = "0.36.0"
 vKtor = "3.5.0"
 vKermit = "2.1.0"
+vKotlinter = "5.5.0"
 
 [plugins]
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "vKotlin" }
 kotlinMultiplatformLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "vGradle" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "vKotlin" }
 vanniktechMavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "vMavenPublish" }
+kotlinter = { id = "org.jmailen.kotlinter", version.ref = "vKotlinter" }
 
 [libraries]
 kotlin-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "vKotlinSerialization" }

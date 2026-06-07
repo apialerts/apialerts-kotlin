@@ -2,10 +2,10 @@ package com.apialerts.sample
 
 import com.apialerts.client.ApiAlerts
 import com.apialerts.client.Event
-import kotlin.system.exitProcess
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
+import kotlin.system.exitProcess
 
 /**
  * Used in the GitHub Action workflow to send an event on build success and publish
@@ -77,15 +77,17 @@ fun main(args: Array<String>) {
                     .onFailure { System.err.println("x Error (minimal): ${it.message}"); exitProcess(1) }
 
                 // Full — all fields
-                ApiAlerts.sendAsync(Event(
-                    message = "Kotlin SDK - full",
-                    channel = channel,
-                    event = "sdk.test",
-                    title = "Integration Test",
-                    tags = listOf("CI/CD", "Kotlin"),
-                    link = link,
-                    data = buildJsonObject { put("version", "1.1.0") },
-                )).onSuccess {
+                ApiAlerts.sendAsync(
+                    Event(
+                        message = "Kotlin SDK - full",
+                        channel = channel,
+                        event = "sdk.test",
+                        title = "Integration Test",
+                        tags = listOf("CI/CD", "Kotlin"),
+                        link = link,
+                        data = buildJsonObject { put("version", "1.1.0") },
+                    ),
+                ).onSuccess {
                     println("✓ Sent to ${it.workspace} (${it.channel})")
                     it.warnings.forEach { w -> println("! Warning: $w") }
                 }.onFailure {

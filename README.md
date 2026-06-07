@@ -94,6 +94,24 @@ ApiAlerts.send {
 }
 ```
 
+### Dependency injection
+
+Prefer an injected client over the global singleton when you use DI, mock in tests, or need multiple keys. Construct an `ApiAlertsClient` and inject it:
+
+```kotlin
+import com.apialerts.client.ApiAlertsClient
+
+// Koin
+single<ApiAlertsClient> { ApiAlertsClient(apiKey = "your-api-key") }
+
+// anywhere it's injected
+class DeployNotifier(private val alerts: ApiAlertsClient) {
+    suspend fun onDeploy() = alerts.sendAsync { message = "Deploy complete" }
+}
+```
+
+`ApiAlertsClient` exposes the same `send` / `sendAsync` (plus the DSL) as the singleton - `ApiAlerts` is a thin facade over a default instance. Use the singleton for quick one-off use, the instance for DI.
+
 ### Enable debug logging
 
 ```kotlin
@@ -155,6 +173,7 @@ val result = ApiAlerts.sendAsync(
 | `ApiAlerts.send { ... }`                                | Fire-and-forget DSL form.                                                   |
 | `ApiAlerts.sendAsync(event, apiKey = null)`             | Awaitable, returns `Result<SendResult>`. Never throws.                      |
 | `ApiAlerts.sendAsync { ... }`                           | Awaitable DSL form.                                                         |
+| `ApiAlertsClient(apiKey, debug = false)`                | Construct an injectable instance. Same `send` / `sendAsync` (+ DSL) as the singleton. |
 
 ### SendResult fields
 
