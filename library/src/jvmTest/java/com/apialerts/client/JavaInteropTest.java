@@ -1,7 +1,9 @@
 package com.apialerts.client;
 
 import org.junit.Test;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 // Verifies the Java-facing surface (static ApiAlerts, EventBuilder, the
@@ -28,6 +30,16 @@ public class JavaInteropTest {
         // CompletableFuture bridge for awaitable delivery
         CompletableFuture<SendResult> future = ApiAlertsJvm.sendFuture(event);
         assertNotNull(future);
+    }
+
+    @Test
+    public void javaCanSetDataFromMap() {
+        // A plain Map spares Java callers the kotlinx JsonObject ceremony.
+        Event stringData = new EventBuilder("Java data").data(Map.of("plan", "pro")).build();
+        assertEquals(Map.of("plan", "pro"), stringData.getData());
+
+        Event numberData = new EventBuilder("Java data").data(Map.of("count", 5)).build();
+        assertEquals(Map.of("count", 5), numberData.getData());
     }
 
     @Test

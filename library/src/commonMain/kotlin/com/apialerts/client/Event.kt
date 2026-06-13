@@ -1,7 +1,5 @@
 package com.apialerts.client
 
-import kotlinx.serialization.json.JsonObject
-
 /**
  * A single notification dispatched to API Alerts.
  *
@@ -59,6 +57,15 @@ data class Event(
     /**
      * Arbitrary key-value metadata. Available to non-push destinations for
      * templating (Slack message bodies, email templates, webhook payloads).
+     *
+     * A plain map - values are mapped to JSON heuristically (strings, numbers,
+     * booleans, `null`, nested maps and lists). For full control over the JSON
+     * shape, pass a `kotlinx.serialization.json.JsonObject`, which is itself a
+     * `Map` and so is accepted here directly:
+     * ```kotlin
+     * Event(message = "Deploy complete", data = mapOf("env" to "prod", "build" to 42))
+     * Event(message = "Deploy complete", data = buildJsonObject { put("env", "prod") })
+     * ```
      */
-    val data: JsonObject? = null,
+    val data: Map<String, Any?>? = null,
 )

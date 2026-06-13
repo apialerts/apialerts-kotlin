@@ -98,7 +98,7 @@ internal class ClientImpl(
                 title = event.title,
                 tags = event.tags,
                 link = event.link,
-                data = event.data,
+                data = event.data?.toJsonObject(),
             )
             val response = api.send(apiKey, payload, integration, version, baseUrl)
             Result.success(

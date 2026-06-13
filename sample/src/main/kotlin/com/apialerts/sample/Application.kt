@@ -3,8 +3,6 @@ package com.apialerts.sample
 import com.apialerts.client.ApiAlerts
 import com.apialerts.client.Event
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
 import kotlin.system.exitProcess
 
 /**
@@ -33,6 +31,7 @@ fun main(args: Array<String>) {
                     title = "Build Passed"
                     tags = listOf("CI/CD", "Kotlin", "Build")
                     this.link = link
+                    data = mapOf("integration" to "kotlin")
                 }.onSuccess {
                     println("✓ Sent to ${it.workspace} (${it.channel})")
                 }.onFailure {
@@ -48,6 +47,7 @@ fun main(args: Array<String>) {
                     title = "Release Build Passed"
                     tags = listOf("CI/CD", "Kotlin", "Build")
                     this.link = link
+                    data = mapOf("integration" to "kotlin")
                 }.onSuccess {
                     println("✓ Sent to ${it.workspace} (${it.channel})")
                 }.onFailure {
@@ -63,6 +63,7 @@ fun main(args: Array<String>) {
                     title = "Published"
                     tags = listOf("CI/CD", "Kotlin", "Deploy")
                     this.link = link
+                    data = mapOf("integration" to "kotlin")
                 }.onSuccess {
                     println("✓ Sent to ${it.workspace} (${it.channel})")
                 }.onFailure {
@@ -85,7 +86,7 @@ fun main(args: Array<String>) {
                         title = "Integration Test",
                         tags = listOf("CI/CD", "Kotlin"),
                         link = link,
-                        data = buildJsonObject { put("version", "1.1.0") },
+                        data = mapOf("integration" to "kotlin"),
                     ),
                 ).onSuccess {
                     println("✓ Sent to ${it.workspace} (${it.channel})")

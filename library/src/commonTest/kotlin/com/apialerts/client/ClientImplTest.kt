@@ -6,6 +6,8 @@ import com.apialerts.client.routes.EventRoutes
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.statement.HttpResponse
 import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -35,6 +37,21 @@ private class ThrowingRoutes(private val exception: Exception) : EventRoutes {
         version: String,
         baseUrl: String,
     ): EventResponse = throw exception
+}
+
+private class CapturingRoutes : EventRoutes {
+    var captured: EventRequest? = null
+
+    override suspend fun send(
+        apiKey: String,
+        payload: EventRequest,
+        integration: String,
+        version: String,
+        baseUrl: String,
+    ): EventResponse {
+        captured = payload
+        return EventResponse(workspace = "Acme Corp", channel = "general", warnings = null)
+    }
 }
 
 // --- sendAsync validation tests ---
@@ -89,6 +106,43 @@ class ClientImplTest {
         assertTrue(result.isFailure)
         assertIs<ApiAlertsException>(result.exceptionOrNull())
         assertEquals("invalid response from server", result.exceptionOrNull()?.message)
+    }
+
+    // --- data conversion tests ---
+
+    @Test
+    fun `sendAsync converts a plain map data field to JSON on the wire`() = runTest {
+        val routes = CapturingRoutes()
+        val client = ClientImpl(api = routes)
+        client.configure("test-key")
+        client.sendAsync(Event(message = "hello", data = mapOf("plan" to "pro", "count" to 5)))
+
+        val expected = buildJsonObject {
+            put("plan", "pro")
+            put("count", 5)
+        }
+        assertEquals(expected, routes.captured?.data)
+    }
+
+    @Test
+    fun `sendAsync leaves a JsonObject data field unchanged on the wire`() = runTest {
+        val routes = CapturingRoutes()
+        val client = ClientImpl(api = routes)
+        client.configure("test-key")
+        val json = buildJsonObject { put("plan", "pro") }
+        client.sendAsync(Event(message = "hello", data = json))
+
+        assertEquals(json, routes.captured?.data)
+    }
+
+    @Test
+    fun `sendAsync omits data when null`() = runTest {
+        val routes = CapturingRoutes()
+        val client = ClientImpl(api = routes)
+        client.configure("test-key")
+        client.sendAsync(Event(message = "hello"))
+
+        assertEquals(null, routes.captured?.data)
     }
 
     // --- api key override tests ---

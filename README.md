@@ -24,7 +24,7 @@ Add the dependency to your `libs.versions.toml`:
 
 ```toml
 [versions]
-apialerts = "1.1.0"
+apialerts = "1.2.0"
 
 [libraries]
 apialerts-client = { module = "com.apialerts:client", version.ref = "apialerts" }
@@ -45,7 +45,7 @@ Ensure `mavenCentral()` is in your repository list.
 ### Manual (without version catalog)
 
 ```kotlin
-implementation("com.apialerts:client:1.1.0")
+implementation("com.apialerts:client:1.2.0")
 ```
 
 ## Quick Start
@@ -126,8 +126,6 @@ Only `message` is required. All other fields are optional and omitted from the r
 
 ```kotlin
 import com.apialerts.client.Event
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
 
 val event = Event(
     message = "Deploy complete",
@@ -136,7 +134,19 @@ val event = Event(
     title   = "Deployed",
     tags    = listOf("CI/CD", "Kotlin"),
     link    = "https://github.com/apialerts/apialerts-kotlin/actions",
-    data    = buildJsonObject { put("version", "1.1.0") },
+    data    = mapOf("version" to "1.2.0", "build" to 42),
+)
+```
+
+`data` takes a plain `Map` everywhere - the `Event` constructor, the `send { ... }` DSL, and the Java `EventBuilder`. Values are mapped to JSON heuristically (strings, numbers, booleans, `null`, nested maps and lists). When you need full control over the JSON shape, pass a `kotlinx.serialization.json.JsonObject` - it is itself a `Map`, so it is accepted by the same `data` parameter:
+
+```kotlin
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
+
+val event = Event(
+    message = "Deploy complete",
+    data    = buildJsonObject { put("version", "1.2.0") },
 )
 ```
 
@@ -148,7 +158,7 @@ val event = Event(
 | `title`   | `String?`       | No       | Short headline some destinations render separately from the message body.                                                                                                                                             |
 | `tags`    | `List<String>?` | No       | Categorisation tags for filtering and search.                                                                                                                                                                         |
 | `link`    | `String?`       | No       | URL associated with the event. Available as a deeplink for push notifications and as a call-to-action for routed destinations.                                                                                        |
-| `data`    | `JsonObject?`   | No       | Arbitrary key-value metadata. Available to non-push destinations for templating (Slack message bodies, email templates, webhook payloads).                                                                            |
+| `data`    | `Map<String, Any?>?` | No  | Arbitrary key-value metadata. Available to non-push destinations for templating (Slack message bodies, email templates, webhook payloads). Pass a `JsonObject` for full control over the JSON shape.                  |
 
 ### Send to multiple workspaces
 

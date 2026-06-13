@@ -1,7 +1,5 @@
 package com.apialerts.client
 
-import kotlinx.serialization.json.JsonObject
-
 /**
  * Fluent builder for [Event]. Intended for Java callers, where named
  * parameters are unavailable - Kotlin callers should use the [Event] data
@@ -20,15 +18,14 @@ import kotlinx.serialization.json.JsonObject
  *     .build();
  * ```
  *
- * To attach a `data` payload from Java, build a [JsonObject] via
- * `kotlinx.serialization.json` helpers:
+ * Attach a `data` payload with a plain `Map`:
  * ```java
- * JsonObject data = JsonObjectKt.buildJsonObject(builder -> {
- *     JsonElementKt.put(builder, "version", "1.0.0");
- *     return null;
- * });
- * Event event = new EventBuilder("Deploy complete").data(data).build();
+ * Event event = new EventBuilder("Deploy complete")
+ *     .data(Map.of("plan", "pro", "count", 5))
+ *     .build();
  * ```
+ * For full control over the JSON shape, pass a `JsonObject` - it is itself a
+ * `Map` and so is accepted by the same `data` method.
  */
 class EventBuilder(private val message: String) {
 
@@ -37,7 +34,7 @@ class EventBuilder(private val message: String) {
     private var title: String? = null
     private var tags: List<String>? = null
     private var link: String? = null
-    private var data: JsonObject? = null
+    private var data: Map<String, Any?>? = null
 
     /**
      * Workspace channel the push notification fires on. Defaults to the
@@ -67,8 +64,12 @@ class EventBuilder(private val message: String) {
     /**
      * Arbitrary key-value metadata. Available to non-push destinations for
      * templating (Slack message bodies, email templates, webhook payloads).
+     *
+     * Values are mapped to JSON heuristically (strings, numbers, booleans,
+     * nested maps/lists, and null). For full control over the JSON shape, pass
+     * a `JsonObject` - it is itself a `Map` and so is accepted here directly.
      */
-    fun data(data: JsonObject): EventBuilder = apply { this.data = data }
+    fun data(data: Map<String, Any?>): EventBuilder = apply { this.data = data }
 
     /** Build the [Event]. The builder may be reused after `build()`. */
     fun build(): Event = Event(

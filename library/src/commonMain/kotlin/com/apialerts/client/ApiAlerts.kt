@@ -1,6 +1,5 @@
 package com.apialerts.client
 
-import kotlinx.serialization.json.JsonObject
 import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
 
@@ -86,8 +85,13 @@ class EventScope {
     /** URL associated with the event (deeplink + call-to-action). */
     var link: String? = null
 
-    /** Arbitrary key-value metadata for non-push destination templating. */
-    var data: JsonObject? = null
+    /**
+     * Arbitrary key-value metadata for non-push destination templating. A plain
+     * map (`data = mapOf("plan" to "pro")`); values are mapped to JSON
+     * heuristically. A `JsonObject` is itself a `Map`, so assign one directly
+     * for full control over the JSON shape.
+     */
+    var data: Map<String, Any?>? = null
 
     internal fun build() = Event(
         message = message,
