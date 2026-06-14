@@ -11,7 +11,7 @@ fun sampleConfigure() {
     )
 }
 
-// Fire-and-forget — preferred for most use cases
+// Fire-and-forget - preferred for most use cases
 fun sampleSimple() {
     // Event object style
     ApiAlerts.send(Event(message = "Minimal send"))
@@ -27,7 +27,7 @@ fun sampleSimple() {
     }
 }
 
-// Async — waits for the response; useful in serverless where the process exits immediately
+// Async - waits for the response; useful in serverless where the process exits immediately
 suspend fun sampleAsync() {
     // Event object style
     ApiAlerts.sendAsync(Event(message = "Minimal async send"))

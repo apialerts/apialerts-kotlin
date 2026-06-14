@@ -177,7 +177,7 @@ val result = ApiAlerts.sendAsync(
 
 | Method                                                  | Description                                                                 |
 |---------------------------------------------------------|-----------------------------------------------------------------------------|
-| `ApiAlerts.configure(apiKey, debug = false)`            | Initialise the singleton. First call wins; subsequent calls are no-ops.     |
+| `ApiAlerts.configure(apiKey, debug = false)`            | Initialise the singleton. Calling again replaces the key and debug flag.     |
 | `ApiAlerts.setOverrides(integration, version, baseUrl)` | For wrapper libraries to identify themselves in the `X-Integration` header. |
 | `ApiAlerts.send(event, apiKey = null)`                  | Fire-and-forget. Never throws; drops errors silently unless `debug` is on.  |
 | `ApiAlerts.send { ... }`                                | Fire-and-forget DSL form.                                                   |

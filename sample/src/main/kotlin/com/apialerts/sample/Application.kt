@@ -72,12 +72,12 @@ fun main(args: Array<String>) {
                 }
             }
             args.any { it == "--integration-tests" } -> {
-                // Minimal — message only
+                // Minimal - message only
                 ApiAlerts.sendAsync(Event(message = "Kotlin SDK - minimal", channel = channel))
                     .onSuccess { println("✓ Sent to ${it.workspace} (${it.channel})") }
                     .onFailure { System.err.println("x Error (minimal): ${it.message}"); exitProcess(1) }
 
-                // Full — all fields
+                // Full - all fields
                 ApiAlerts.sendAsync(
                     Event(
                         message = "Kotlin SDK - full",
